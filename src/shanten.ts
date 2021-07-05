@@ -12,6 +12,7 @@ export interface ShantenProgress {
   partialSets: PartialSet[],
   remainingTiles: Pai[];
   uselessTiles: Pai[];
+  worstCaseShanten: number;
 }
 
 export function sameTile(pai1: Pai, pai2: Pai): boolean {
@@ -55,13 +56,14 @@ export function fitsInSet(tile: Pai, partialSet: PartialSet): boolean {
 }
 
 export function shanten(tiles: Pai[]): number {
-  return shantenRecurse({partialSets: [], remainingTiles: tiles, uselessTiles: []});
+  return shantenRecurse({partialSets: [], remainingTiles: tiles,
+    uselessTiles: [], worstCaseShanten: 8});
 }
 
 function shantenRecurse(progress: ShantenProgress): number {
   // base case
   if (progress.remainingTiles.length === 0) {
-    return progress.uselessTiles.length;
+    return progress.worstCaseShanten;
   }
 
   const tile = progress.remainingTiles[0];
@@ -77,7 +79,8 @@ function shantenRecurse(progress: ShantenProgress): number {
       const newProgress = {
         partialSets: newPartialSets,
         remainingTiles: newRemainingTiles,
-        uselessTiles: [...progress.uselessTiles]
+        uselessTiles: [...progress.uselessTiles],
+        worstCaseShanten: progress.worstCaseShanten - 1
       }
       newProgress.partialSets.push({
         tiles: partialSet.tiles.concat([tile]),
@@ -87,7 +90,8 @@ function shantenRecurse(progress: ShantenProgress): number {
     }
   })
 
-  const otherRemainingTiles = [...progress.remainingTiles].splice(0,1);
+  const otherRemainingTiles = [...progress.remainingTiles];
+  otherRemainingTiles.splice(0,1);
   const alreadyUsed = new Set<string>();
   otherRemainingTiles.forEach(otherTile => {
     const newSet = formSet(tile, otherTile);
@@ -108,7 +112,8 @@ function shantenRecurse(progress: ShantenProgress): number {
       const newProgress = {
         partialSets: newPartialSets,
         remainingTiles: newRemainingTiles,
-        uselessTiles: [...progress.uselessTiles]
+        uselessTiles: [...progress.uselessTiles],
+        worstCaseShanten: progress.worstCaseShanten - 1
       }
 
       candidates.push(newProgress);
@@ -116,10 +121,13 @@ function shantenRecurse(progress: ShantenProgress): number {
   })
   const newRemainingTiles = [...progress.remainingTiles];
   newRemainingTiles.splice(newRemainingTiles.indexOf(tile), 1);
+  const newUselessTiles = [...progress.uselessTiles];
+  newUselessTiles.push(tile);
   candidates.push({
     partialSets: [...progress.partialSets],
     remainingTiles: newRemainingTiles,
-    uselessTiles: [...progress.uselessTiles]
+    uselessTiles: newUselessTiles,
+    worstCaseShanten: progress.worstCaseShanten
   })
   return Math.min(...candidates.map(progress => shantenRecurse(progress)));
 }
