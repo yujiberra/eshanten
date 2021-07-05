@@ -16,7 +16,7 @@ function rank(pai: Pai): number {
       default:
           throw new Error("Invalid ShupaiType character"); // shouldn't ever happen
     }
-    return tens + pai.value + (pai.aka ? 0.5 : 1);
+    return tens + pai.value - (pai.aka ? 0.5 : 0);
   } else {
     return 30 + (reverseYakuhaiDigits.get(pai) || 0);
   }
@@ -67,13 +67,13 @@ export function parse(input: string): Pai[] {
     }
 
     // extract akadora
-    if (colorString.match("5r")) {
+    if (colorString.match("r5")) {
       pais.push({
         type: shupaiType,
         value: 5,
         aka: true,
       });
-      colorString = colorString.replace(/5r/g,"");
+      colorString = colorString.replace(/r5/g,"");
     }
 
     // parse remaining tiles
@@ -89,7 +89,7 @@ export function parse(input: string): Pai[] {
 }
 
 function stringifySingleShupai(pai: Shupai): string {
-  return pai.value.toString() + pai.aka ? "r" : "";
+  return (pai.aka ? "r" : "") + pai.value.toString();
 }
 
 export function stringify(pais: Pai[]): string {
@@ -113,6 +113,7 @@ export function stringify(pais: Pai[]): string {
     } else {
       if (currentShupaiType) {
         output += currentShupaiType.slice(0,1);
+        currentShupaiType = undefined;
       }
       output += pais.slice(i).map(pai => {
         const maybeString = yakuhaiCharacters.get(pai as Zupai);
@@ -120,6 +121,9 @@ export function stringify(pais: Pai[]): string {
       }).join('');
       break;
     }
+  }
+  if (currentShupaiType) {
+    output += currentShupaiType.slice(0,1);
   }
   return output;
 }
