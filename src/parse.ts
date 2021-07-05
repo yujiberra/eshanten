@@ -1,5 +1,7 @@
 import { isShupai, Pai, reverseYakuhaiDigits, Shupai, ShupaiType, yakuhaiCharacters, yakuhaiDigits, Zupai } from "./pai";
 
+export type PaiOrString = Pai | string;
+
 function rank(pai: Pai): number {
   if (isShupai(pai)) {
     let tens;
@@ -24,6 +26,10 @@ function rank(pai: Pai): number {
 
 function compare(pai1: Pai, pai2: Pai): number {
   return rank(pai1) - rank(pai2);
+}
+
+export function parseSingle(input: string): Pai {
+  return parse(input)[0];
 }
 
 export function parse(input: string): Pai[] {
@@ -90,6 +96,10 @@ export function parse(input: string): Pai[] {
 
 function stringifySingleShupai(pai: Shupai): string {
   return (pai.aka ? "r" : "") + pai.value.toString();
+}
+
+export function stringifySingle(pai: Pai): string {
+  return stringify([pai]);
 }
 
 export function stringify(pais: Pai[]): string {
