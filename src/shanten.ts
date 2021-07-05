@@ -24,24 +24,20 @@ export function sameTile(pai1: Pai, pai2: Pai): boolean {
 }
 
 export function formSet(tile1: Pai, tile2: Pai): PartialSet | null {
-  if (isZupai(tile1)) {
-    return (isZupai(tile2) && tile1 === tile2) ?
-      { tiles: [tile1, tile2], type: "tuple" } : null;
+  if (sameTile(tile1, tile2)) {
+    return { tiles: [tile1, tile2], type: "tuple" };
+  } else if (isShupai(tile1) && isShupai(tile2) && (tile1.type === tile2.type) &&
+             (Math.abs(tile1.value - tile2.value) <= 2)) {
+    return { tiles: [tile1, tile2], type: "run" };
   } else {
-    tile1 = tile1 as Shupai;
-    if (isShupai(tile2) && tile1.type === tile2.type) {
-      if (tile1.value === tile2.value) {
-        return { tiles: [tile1, tile2], type: "tuple" };
-      } else if (Math.abs(tile1.value - tile2.value) <= 2) {
-        return { tiles: [tile1, tile2], type: "run" };
-      }
-    }
     return null;
   }
 }
 
 export function fitsInSet(tile: Pai, partialSet: PartialSet): boolean {
-  if (partialSet.type === "tuple") {
+  if (partialSet.tiles.length > 2) {
+    return false;
+  } else if (partialSet.type === "tuple") {
     return sameTile(tile, partialSet.tiles[0]);
   } else {
     if (isShupai(tile) && tile.type === (partialSet.tiles[0] as Shupai).type) {
@@ -65,7 +61,6 @@ export function shanten(tiles: Pai[]): number {
 function shantenRecurse(progress: ShantenProgress): number {
   // base case
   if (progress.remainingTiles.length === 0) {
-    console.log(progress);
     return progress.uselessTiles.length;
   }
 
