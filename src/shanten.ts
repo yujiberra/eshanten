@@ -60,6 +60,13 @@ export function shanten(tiles: Pai[]): number {
     uselessTiles: [], worstCaseShanten: 8});
 }
 
+function removeAndCopy<T>(array: T[], ...elements: T[]): T[] {
+  const copiedArray = [...array];
+  elements.forEach(element =>
+    copiedArray.splice(copiedArray.indexOf(element), 1));
+  return copiedArray;
+}
+
 function shantenRecurse(progress: ShantenProgress): number {
   // base case
   if (progress.remainingTiles.length === 0) {
@@ -70,15 +77,9 @@ function shantenRecurse(progress: ShantenProgress): number {
   const candidates: ShantenProgress[] = [];
   progress.partialSets.forEach(partialSet => {
     if (fitsInSet(tile, partialSet)) {
-      const newPartialSets = [...progress.partialSets];
-      newPartialSets.splice(newPartialSets.indexOf(partialSet), 1)
-
-      const newRemainingTiles = [...progress.remainingTiles];
-      newRemainingTiles.splice(newRemainingTiles.indexOf(tile), 1);
-
       const newProgress = {
-        partialSets: newPartialSets,
-        remainingTiles: newRemainingTiles,
+        partialSets: removeAndCopy(progress.partialSets, partialSet),
+        remainingTiles: removeAndCopy(progress.remainingTiles, tile),
         uselessTiles: [...progress.uselessTiles],
         worstCaseShanten: progress.worstCaseShanten - 1
       }
@@ -103,15 +104,9 @@ function shantenRecurse(progress: ShantenProgress): number {
         )) {
       alreadyUsed.add(string);
 
-      const newPartialSets = [...progress.partialSets];
-      newPartialSets.push(newSet);
-      const newRemainingTiles = [...progress.remainingTiles];
-      newRemainingTiles.splice(newRemainingTiles.indexOf(tile), 1);
-      newRemainingTiles.splice(newRemainingTiles.indexOf(otherTile), 1);
-
       const newProgress = {
-        partialSets: newPartialSets,
-        remainingTiles: newRemainingTiles,
+        partialSets: [...progress.partialSets].concat([newSet]),
+        remainingTiles: removeAndCopy(progress.remainingTiles, tile, otherTile),
         uselessTiles: [...progress.uselessTiles],
         worstCaseShanten: progress.worstCaseShanten - 1
       }
@@ -119,15 +114,12 @@ function shantenRecurse(progress: ShantenProgress): number {
       candidates.push(newProgress);
     }
   })
-  const newRemainingTiles = [...progress.remainingTiles];
-  newRemainingTiles.splice(newRemainingTiles.indexOf(tile), 1);
-  const newUselessTiles = [...progress.uselessTiles];
-  newUselessTiles.push(tile);
   candidates.push({
     partialSets: [...progress.partialSets],
-    remainingTiles: newRemainingTiles,
-    uselessTiles: newUselessTiles,
+    remainingTiles: removeAndCopy(progress.remainingTiles, tile),
+    uselessTiles: progress.uselessTiles.concat([tile]),
     worstCaseShanten: progress.worstCaseShanten
   })
+
   return Math.min(...candidates.map(progress => shantenRecurse(progress)));
 }
