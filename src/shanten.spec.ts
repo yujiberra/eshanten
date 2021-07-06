@@ -117,10 +117,30 @@ describe("fitsInSet", function() {
 });
 
 describe("shanten", function() {
-  it ("should correctly compute shanten", function() {
+  it ("should correctly compute shanten in simple cases", function() {
     expect(shanten(parse("123m4r56p789s1234z"))).toBe(2);
     expect(shanten(parse("123m4r56p789s1134z"))).toBe(1);
     expect(shanten(parse("123m4r56p789s1133z"))).toBe(0);
     expect(shanten(parse("123m4r56p789s1133z"))).toBe(0);
+  });
+
+  it ("should correctly identify that 123m4r56p789s1111z is 1shanten", function() {
+    expect(shanten(parse("123m4r56p789s1111z"))).toBe(1);
+  });
+
+  it ("should correctly identify that 123mr55p11112222z is 2shanten", function() {
+    expect(shanten(parse("123mr55p11112222z"))).toBe(2);
+  });
+
+  it ("should correctly identify that 123mr55p11119999s is 1shanten", function() {
+    expect(shanten(parse("123mr55p11119999s"))).toBe(1);
+  });
+
+  it ("should correctly identify that 1111222233334z is 3shanten", function() {
+    expect(shanten(parse("1111222233334z"))).toBe(3);
+  });
+
+  it ("should correctly identify that 1111m3333p5555s1z is 2shanten", function() {
+    expect(shanten(parse("1111m3333p5555s1z"))).toBe(2);
   });
 });
