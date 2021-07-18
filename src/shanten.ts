@@ -76,6 +76,7 @@ function removeAndCopy<T>(array: T[], ...elements: T[]): T[] {
 function shantenRecurse(progress: ShantenProgress): ShantenProgress[] {
   // base case
   if (progress.remaining.length === 0) {
+    progress.worstCaseShanten = progress.useless.length;
     return [progress];
   }
 
@@ -106,27 +107,23 @@ function shantenRecurse(progress: ShantenProgress): ShantenProgress[] {
 
   // try making new sets with first tile and other tiles
   if (progress.partialSets.length < 5) {
-    const otherRemainingTiles = [...progress.remaining];
-    otherRemainingTiles.splice(0,1);
-    const alreadyUsed = new Set<string>();
-    otherRemainingTiles.forEach(otherTile => {
-      const newSet = formSet(tile, otherTile);
-      const string = stringifySingle(otherTile);
-      if (newSet && !alreadyUsed.has(string) &&
-          !progress.partialSets.find(partialSet =>
-            partialSet.type === "tuple" &&
-            sameTile(partialSet.tiles[0], tile))) {
-        tileHasAFriend = true;
-        alreadyUsed.add(string);
-
-        candidates.push({
-          partialSets: [...progress.partialSets].concat([newSet]),
-          remaining: removeAndCopy(progress.remaining, tile, otherTile),
-          useless: [...progress.useless],
-          worstCaseShanten: progress.worstCaseShanten - 1
-        });
-      }
-    })
+    if (progress.partialSets.filter(set =>
+        set.type == "tuple" && sameTile(tile, set.tiles[0])).length == 0) {
+      candidates.push({
+        partialSets: progress.partialSets.concat([{tiles:[tile], type:"tuple"}]),
+        remaining: removeAndCopy(progress.remaining, tile),
+        useless: [...progress.useless],
+        worstCaseShanten: progress.worstCaseShanten
+      });
+    }
+    if (isShupai(tile)) {
+      candidates.push({
+        partialSets: progress.partialSets.concat([{tiles:[tile], type:"run"}]),
+        remaining: removeAndCopy(progress.remaining, tile),
+        useless: [...progress.useless],
+        worstCaseShanten: progress.worstCaseShanten
+      });
+    }
   }
 
   // if tile can't combine with anything, give up on using it
