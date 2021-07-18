@@ -1,5 +1,5 @@
 import { isShupai, isZupai, Pai, Shupai } from "./pai";
-import { stringify, stringifySingle } from "./parse";
+import { stringify } from "./parse";
 
 export interface PartialSet {
   tiles: Pai[],
@@ -12,15 +12,13 @@ export interface ShantenProgress {
   partialSets: PartialSet[],
   remaining: Pai[];
   useless: Pai[];
-  worstCaseShanten: number;
 }
 
-export function stringifyProgress({ partialSets, remaining, useless,
-    worstCaseShanten }: ShantenProgress): string {
+export function stringifyProgress({ partialSets, remaining, useless }: ShantenProgress): string {
   const sets = partialSets.map(s => stringify(s.tiles));
   const remainingStr = remaining.length > 0 ? `/ Remaining: ${stringify(remaining)} ` : '';
   const uselessStr = stringify(useless);
-  return `Sets: ${sets.toString()} / Useless: ${uselessStr} ${remainingStr}/ Shanten = ${worstCaseShanten}`
+  return `Sets: ${sets.toString()} / Useless: ${uselessStr} ${remainingStr}/ Shanten = ${useless.length}`
 }
 
 export function sameTile(pai1: Pai, pai2: Pai): boolean {
@@ -62,8 +60,9 @@ export function fitsInSet(tile: Pai, partialSet: PartialSet): boolean {
 
 export function shanten(tiles: Pai[]): number {
   const results = shantenRecurse({partialSets: [], remaining: tiles,
-    useless: [], worstCaseShanten: 8});
-  return results[0].worstCaseShanten
+    useless: []});
+  console.log(results.map(result => stringifyProgress(result)));
+  return results[0].useless.length
 }
 
 function removeAndCopy<T>(array: T[], ...elements: T[]): T[] {
@@ -73,10 +72,9 @@ function removeAndCopy<T>(array: T[], ...elements: T[]): T[] {
   return copiedArray;
 }
 
-function shantenRecurse(progress: ShantenProgress): ShantenProgress[] {
+export function shantenRecurse(progress: ShantenProgress): ShantenProgress[] {
   // base case
   if (progress.remaining.length === 0) {
-    progress.worstCaseShanten = progress.useless.length;
     return [progress];
   }
 
@@ -100,7 +98,6 @@ function shantenRecurse(progress: ShantenProgress): ShantenProgress[] {
           .concat([newPartialSet]),
         remaining: removeAndCopy(progress.remaining, tile),
         useless: [...progress.useless],
-        worstCaseShanten: progress.worstCaseShanten - 1
       });
     }
   })
@@ -113,7 +110,6 @@ function shantenRecurse(progress: ShantenProgress): ShantenProgress[] {
         partialSets: progress.partialSets.concat([{tiles:[tile], type:"tuple"}]),
         remaining: removeAndCopy(progress.remaining, tile),
         useless: [...progress.useless],
-        worstCaseShanten: progress.worstCaseShanten
       });
     }
     if (isShupai(tile)) {
@@ -121,7 +117,6 @@ function shantenRecurse(progress: ShantenProgress): ShantenProgress[] {
         partialSets: progress.partialSets.concat([{tiles:[tile], type:"run"}]),
         remaining: removeAndCopy(progress.remaining, tile),
         useless: [...progress.useless],
-        worstCaseShanten: progress.worstCaseShanten
       });
     }
   }
@@ -132,12 +127,11 @@ function shantenRecurse(progress: ShantenProgress): ShantenProgress[] {
       partialSets: [...progress.partialSets],
       remaining: removeAndCopy(progress.remaining, tile),
       useless: progress.useless.concat([tile]),
-      worstCaseShanten: progress.worstCaseShanten
     })
   }
 
   const results = candidates.map(progress => shantenRecurse(progress));
   const flattened = results[0].concat(...results.slice(1));
-  const minimum = Math.min(...flattened.map(progress => progress.worstCaseShanten));
-  return flattened.filter(prog => prog.worstCaseShanten === minimum);
+  const minimum = Math.min(...flattened.map(progress => progress.useless.length));
+  return flattened.filter(prog => prog.useless.length === minimum);
 }
