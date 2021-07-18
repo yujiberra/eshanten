@@ -123,10 +123,14 @@ export function shantenRecurse(progress: ShantenProgress): ShantenProgress[] {
 
   // if tile can't combine with anything, give up on using it
   if (!tileHasAFriend) {
+    const index = progress.remaining.indexOf(tile);
+    const matches = progress.remaining.filter(t => sameTile(t, tile));
+    const newRemaining = [...progress.remaining];
+    newRemaining.splice(index, matches.length);
     candidates.push({
       partialSets: [...progress.partialSets],
-      remaining: removeAndCopy(progress.remaining, tile),
-      useless: progress.useless.concat([tile]),
+      remaining: newRemaining,
+      useless: progress.useless.concat(matches),
     })
   }
 
