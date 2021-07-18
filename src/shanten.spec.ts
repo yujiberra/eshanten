@@ -1,5 +1,5 @@
 import { parse, parseSingle as parseOne } from "./parse";
-import { fitsInSet, formSet, PartialSet, sameTile, shanten } from "./shanten"
+import { fitsInSet, PartialSet, sameTile, shanten, shantenRecurse } from "./shanten"
 
 describe("sameTile", function() {
   it("should identify identical zupai", function() {
@@ -34,85 +34,70 @@ describe("sameTile", function() {
   })
 });
 
-describe("formSet", function() {
-  it ("should not combine distinct zupai", function() {
-    expect(formSet(parseOne("7z"), parseOne("1z"))).toBeFalsy();
-    expect(formSet(parseOne("5z"), parseOne("6z"))).toBeFalsy();
-  });
-
-  it ("should not combine shupai with zupai", function() {
-    expect(formSet(parseOne("7z"), parseOne("3m"))).toBeFalsy();
-    expect(formSet({ type: "pinzu", value: 5, aka: true }, parseOne("5z"))).toBeFalsy();
-  })
-
-  it("should not combine Shupai from different suits", function() {
-    expect(formSet(parseOne("3m"),
-      parseOne("3p"))).toBeFalsy();
-    expect(formSet(parseOne("2m"),
-      parseOne("3p"))).toBeFalsy();
-    expect(formSet(parseOne("1m"),
-      parseOne("3p"))).toBeFalsy();
-    expect(formSet(parseOne("9m"),
-      parseOne("3p"))).toBeFalsy()
-  })
-
-  it("should not combine far-away Shupai from the same suit", function() {
-    expect(formSet(parseOne("3m"), parseOne("6m"))).toBeFalsy();
-    expect(formSet(parseOne("1m"), parseOne("9m"))).toBeFalsy();
-  })
-
-  it ("should combine identical zupai", function() {
-    const set = formSet(parseOne("1z"), parseOne("1z"));
-    expect(set).toBeTruthy();
-    expect(set?.type).toBe("tuple");
-  });
-
-  it ("should combine identical shupai", function() {
-    const set = formSet(parseOne("5m"), parseOne("r5m"));
-    expect(set).toBeTruthy();
-    expect(set?.type).toBe("tuple");
-  });
-
-  it ("should combine adjacent shupai", function() {
-    const set = formSet(parseOne("4m"), parseOne("r5m"));
-    expect(set).toBeTruthy();
-    expect(set?.type).toBe("run");
-  });
-
-  it ("should combine one-gap shupai", function() {
-    const set = formSet(parseOne("3m"), parseOne("r5m"));
-    expect(set).toBeTruthy();
-    expect(set?.type).toBe("run");
-  });
-});
-
 describe("fitsInSet", function() {
-  it ("should correctly identify what fits into a pair", function() {
-    const nanPair = formSet(parseOne("2z"), parseOne("2z")) as PartialSet;
+  it ("should correctly identify what fits into a singleton tuple", function() {
+    const nanPair: PartialSet = {tiles:parse("2z"), type:"tuple"};
     expect(fitsInSet(parseOne("1z"), nanPair)).toBeFalse();
     expect(fitsInSet(parseOne("5p"), nanPair)).toBeFalse();
     expect(fitsInSet(parseOne("2z"), nanPair)).toBeTrue();
-    const akaPair = formSet(parseOne("r5m"), parseOne("5m")) as PartialSet;
+    const akaPair: PartialSet = {tiles:parse("r5m"), type:"tuple"};
     expect(fitsInSet(parseOne("1z"), akaPair)).toBeFalse();
     expect(fitsInSet(parseOne("5p"), akaPair)).toBeFalse();
     expect(fitsInSet(parseOne("4m"), akaPair)).toBeFalse();
     expect(fitsInSet(parseOne("5m"), akaPair)).toBeTrue();
   });
 
-  it ("should correctly identify what fits into a ryanmen", function() {
-    const run = formSet(parseOne("2m"), parseOne("3m")) as PartialSet;
+  it ("should correctly identify what fits into a pair", function() {
+    const nanPair: PartialSet = {tiles:parse("22z"), type:"tuple"};
+    expect(fitsInSet(parseOne("1z"), nanPair)).toBeFalse();
+    expect(fitsInSet(parseOne("5p"), nanPair)).toBeFalse();
+    expect(fitsInSet(parseOne("2z"), nanPair)).toBeTrue();
+    const akaPair: PartialSet = {tiles:parse("r55m"), type:"tuple"};
+    expect(fitsInSet(parseOne("1z"), akaPair)).toBeFalse();
+    expect(fitsInSet(parseOne("5p"), akaPair)).toBeFalse();
+    expect(fitsInSet(parseOne("4m"), akaPair)).toBeFalse();
+    expect(fitsInSet(parseOne("5m"), akaPair)).toBeTrue();
+  });
+
+  it ("should correctly identify what fits into a singleton run", function() {
+    const run: PartialSet = {tiles:parse("2m"), type:"run"};
     expect(fitsInSet(parseOne("1z"), run)).toBeFalse();
     expect(fitsInSet(parseOne("r5m"), run)).toBeFalse();
+    expect(fitsInSet(parseOne("1s"), run)).toBeFalse();
+    expect(fitsInSet(parseOne("4p"), run)).toBeFalse();
+    expect(fitsInSet(parseOne("1m"), run)).toBeTrue();
+    expect(fitsInSet(parseOne("3m"), run)).toBeTrue();
+    expect(fitsInSet(parseOne("4m"), run)).toBeTrue();
+  });
+
+  it ("should correctly identify what fits into a ryanmen", function() {
+    const run: PartialSet = {tiles:parse("23m"), type:"run"};
+    expect(fitsInSet(parseOne("1z"), run)).toBeFalse();
+    expect(fitsInSet(parseOne("r5m"), run)).toBeFalse();
+    expect(fitsInSet(parseOne("1s"), run)).toBeFalse();
+    expect(fitsInSet(parseOne("4p"), run)).toBeFalse();
+    expect(fitsInSet(parseOne("2m"), run)).toBeFalse();
+    expect(fitsInSet(parseOne("3m"), run)).toBeFalse();
     expect(fitsInSet(parseOne("1m"), run)).toBeTrue();
     expect(fitsInSet(parseOne("4m"), run)).toBeTrue();
   });
 
   it ("should correctly identify what fits into a kanchan", function() {
-    const run = formSet(parseOne("2m"), parseOne("4m")) as PartialSet;
+    const run: PartialSet = {tiles:parse("24m"), type:"run"};
     expect(fitsInSet(parseOne("1z"), run)).toBeFalse();
     expect(fitsInSet(parseOne("r5m"), run)).toBeFalse();
     expect(fitsInSet(parseOne("1m"), run)).toBeFalse();
+    expect(fitsInSet(parseOne("3s"), run)).toBeFalse();
+    expect(fitsInSet(parseOne("2m"), run)).toBeFalse();
+    expect(fitsInSet(parseOne("4m"), run)).toBeFalse();
     expect(fitsInSet(parseOne("3m"), run)).toBeTrue();
+  });
+});
+
+describe("shantenRecurse", function() {
+  it ("should correctly identify multiple interpretations of 3menchan", function() {
+    expect(shantenRecurse({partialSets: [], remaining: parse("12345m4r56p789s77z"),
+      useless: []}).length).toBe(2);
   });
 });
 
@@ -121,7 +106,10 @@ describe("shanten", function() {
     expect(shanten(parse("123m4r56p789s1234z"))).toBe(2);
     expect(shanten(parse("123m4r56p789s1134z"))).toBe(1);
     expect(shanten(parse("123m4r56p789s1133z"))).toBe(0);
-    expect(shanten(parse("123m4r56p789s1133z"))).toBe(0);
+  });
+
+  it ("should correctly compute shanten for complex waits", function() {
+    expect(shanten(parse("12345m4r56p789s77z"))).toBe(0);
   });
 
   it ("should correctly identify that 123m4r56p789s1111z is 1shanten", function() {
