@@ -75,9 +75,11 @@ function shantenRecurse(progress: ShantenProgress): number {
 
   // try adding first tile to existing sets
   const tile = progress.remaining[0];
+  let tileHasAFriend = false;
   const candidates: ShantenProgress[] = [];
   progress.partialSets.forEach(partialSet => {
     if (fitsInSet(tile, partialSet)) {
+      tileHasAFriend = true;
       const newPartialSet = {
         tiles: partialSet.tiles.concat([tile]),
         type: partialSet.type
@@ -104,6 +106,7 @@ function shantenRecurse(progress: ShantenProgress): number {
         !progress.partialSets.find(partialSet =>
           partialSet.type === "tuple" &&
           sameTile(partialSet.tiles[0], tile))) {
+      tileHasAFriend = true;
       alreadyUsed.add(string);
 
       candidates.push({
@@ -114,12 +117,16 @@ function shantenRecurse(progress: ShantenProgress): number {
       });
     }
   })
+
+  // if tile can't combine with anything, give up on using it
+  if (!tileHasAFriend) {
   candidates.push({
     partialSets: [...progress.partialSets],
     remaining: removeAndCopy(progress.remaining, tile),
     useless: progress.useless.concat([tile]),
     worstCaseShanten: progress.worstCaseShanten
   })
+  }
 
   return Math.min(...candidates.map(progress => shantenRecurse(progress)));
 }
