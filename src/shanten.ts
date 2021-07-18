@@ -50,13 +50,10 @@ export function fitsInSet(tile: Pai, partialSet: PartialSet): boolean {
     return sameTile(tile, partialSet.tiles[0]);
   } else {
     if (isShupai(tile) && tile.type === (partialSet.tiles[0] as Shupai).type) {
-      const [v1, v2, v3] = [
-        tile.value,
-        (partialSet.tiles[0] as Shupai).value,
-        (partialSet.tiles[1] as Shupai).value
-      ]
-      return (Math.max(v1, v2, v3) - Math.min(v1, v2, v3) === 2) &&
-        (v1 != v2) && (v2 != v3) && (v3 != v1);
+      const allTiles = partialSet.tiles.concat(tile).map(tile => (tile as Shupai).value);
+      const set = new Set(allTiles);
+      const range = Math.max(...allTiles) - Math.min(...allTiles);
+      return [...set].length == allTiles.length && range <= 2;
     } else {
       return false;
     }
