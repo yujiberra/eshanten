@@ -87,7 +87,11 @@ function shantenRecurse(progress: ShantenProgress): ShantenProgress[] {
   let tileHasAFriend = false;
   const candidates: ShantenProgress[] = [];
   progress.partialSets.forEach(partialSet => {
-    if (fitsInSet(tile, partialSet)) {
+    // The complex check below is to disallow e.g. adding 2m to 13m,
+    // to prevent double-counting (since 12m + 3m happens earlier)
+    if (fitsInSet(tile, partialSet) &&
+        (isZupai(tile) || (partialSet.type == 'tuple' ||
+          Math.max(...partialSet.tiles.map(tile => (tile as Shupai).value)) < (tile as Shupai).value))) {
       tileHasAFriend = true;
       const newPartialSet = {
         tiles: partialSet.tiles.concat([tile]),
