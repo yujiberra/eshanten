@@ -1,5 +1,5 @@
 import { isShupai, isZupai, Pai, Shupai } from "./pai";
-import { stringifySingle } from "./parse";
+import { stringify, stringifySingle } from "./parse";
 
 export interface PartialSet {
   tiles: Pai[],
@@ -15,6 +15,13 @@ export interface ShantenProgress {
   worstCaseShanten: number;
 }
 
+export function stringifyProgress({ partialSets, remaining, useless,
+    worstCaseShanten }: ShantenProgress): string {
+  const sets = partialSets.map(s => stringify(s.tiles));
+  const remainingStr = remaining.length > 0 ? `/ Remaining: ${stringify(remaining)} ` : '';
+  const uselessStr = stringify(useless);
+  return `Sets: ${sets.toString()} / Useless: ${uselessStr} ${remainingStr}/ Shanten = ${worstCaseShanten}`
+}
 export function sameTile(pai1: Pai, pai2: Pai): boolean {
   if (isZupai(pai1)) {
     return isZupai(pai2) && pai1 === pai2;
