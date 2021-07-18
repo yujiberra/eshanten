@@ -10,8 +10,8 @@ export type SetType = "run" | "tuple";
 
 export interface ShantenProgress {
   partialSets: PartialSet[],
-  remainingTiles: Pai[];
-  uselessTiles: Pai[];
+  remaining: Pai[];
+  useless: Pai[];
   worstCaseShanten: number;
 }
 
@@ -56,8 +56,8 @@ export function fitsInSet(tile: Pai, partialSet: PartialSet): boolean {
 }
 
 export function shanten(tiles: Pai[]): number {
-  return shantenRecurse({partialSets: [], remainingTiles: tiles,
-    uselessTiles: [], worstCaseShanten: 8});
+  return shantenRecurse({partialSets: [], remaining: tiles,
+    useless: [], worstCaseShanten: 8});
 }
 
 function removeAndCopy<T>(array: T[], ...elements: T[]): T[] {
@@ -69,29 +69,32 @@ function removeAndCopy<T>(array: T[], ...elements: T[]): T[] {
 
 function shantenRecurse(progress: ShantenProgress): number {
   // base case
-  if (progress.remainingTiles.length === 0) {
+  if (progress.remaining.length === 0) {
     return progress.worstCaseShanten;
   }
 
-  const tile = progress.remainingTiles[0];
+  // try adding first tile to existing sets
+  const tile = progress.remaining[0];
   const candidates: ShantenProgress[] = [];
   progress.partialSets.forEach(partialSet => {
     if (fitsInSet(tile, partialSet)) {
-      const newProgress = {
-        partialSets: removeAndCopy(progress.partialSets, partialSet),
-        remainingTiles: removeAndCopy(progress.remainingTiles, tile),
-        uselessTiles: [...progress.uselessTiles],
-        worstCaseShanten: progress.worstCaseShanten - 1
-      }
-      newProgress.partialSets.push({
+      const newPartialSet = {
         tiles: partialSet.tiles.concat([tile]),
         type: partialSet.type
-      });
+      }
+      const newProgress = {
+        partialSets: removeAndCopy(progress.partialSets, partialSet)
+          .concat([newPartialSet]),
+        remaining: removeAndCopy(progress.remaining, tile),
+        useless: [...progress.useless],
+        worstCaseShanten: progress.worstCaseShanten - 1
+      }
       candidates.push(newProgress);
     }
   })
 
-  const otherRemainingTiles = [...progress.remainingTiles];
+  // try making new sets with first tile and other tiles
+  const otherRemainingTiles = [...progress.remaining];
   otherRemainingTiles.splice(0,1);
   const alreadyUsed = new Set<string>();
   otherRemainingTiles.forEach(otherTile => {
@@ -100,24 +103,21 @@ function shantenRecurse(progress: ShantenProgress): number {
     if (newSet && !alreadyUsed.has(string) &&
         !progress.partialSets.find(partialSet =>
           partialSet.type === "tuple" &&
-          sameTile(partialSet.tiles[0], tile)
-        )) {
+          sameTile(partialSet.tiles[0], tile))) {
       alreadyUsed.add(string);
 
-      const newProgress = {
+      candidates.push({
         partialSets: [...progress.partialSets].concat([newSet]),
-        remainingTiles: removeAndCopy(progress.remainingTiles, tile, otherTile),
-        uselessTiles: [...progress.uselessTiles],
+        remaining: removeAndCopy(progress.remaining, tile, otherTile),
+        useless: [...progress.useless],
         worstCaseShanten: progress.worstCaseShanten - 1
-      }
-
-      candidates.push(newProgress);
+      });
     }
   })
   candidates.push({
     partialSets: [...progress.partialSets],
-    remainingTiles: removeAndCopy(progress.remainingTiles, tile),
-    uselessTiles: progress.uselessTiles.concat([tile]),
+    remaining: removeAndCopy(progress.remaining, tile),
+    useless: progress.useless.concat([tile]),
     worstCaseShanten: progress.worstCaseShanten
   })
 
