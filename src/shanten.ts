@@ -78,6 +78,9 @@ export function shantenRecurse(progress: ShantenProgress): ShantenProgress[] {
     return [progress];
   }
 
+  const roomForMoreRunsAndTriples = progress.partialSets.filter(set =>
+    (set.type == "run" || set.tiles.length == 3)).length < 4;
+
   // try adding first tile to existing sets
   const tile = progress.remaining[0];
   let tileHasAFriend = false;
@@ -86,8 +89,8 @@ export function shantenRecurse(progress: ShantenProgress): ShantenProgress[] {
     // The complex check below is to disallow e.g. adding 2m to 13m,
     // to prevent double-counting (since 12m + 3m happens earlier)
     if (fitsInSet(tile, partialSet) &&
-        (isZupai(tile) || (partialSet.type == 'tuple' ||
-          Math.max(...partialSet.tiles.map(tile => (tile as Shupai).value)) < (tile as Shupai).value))) {
+        ((partialSet.type == 'tuple' && ((partialSet.tiles.length == 1)  || roomForMoreRunsAndTriples)) ||
+          Math.max(...partialSet.tiles.map(tile => (tile as Shupai).value)) < (tile as Shupai).value)) {
       tileHasAFriend = true;
       const newPartialSet = {
         tiles: partialSet.tiles.concat([tile]),
@@ -108,11 +111,13 @@ export function shantenRecurse(progress: ShantenProgress): ShantenProgress[] {
       (progress.partialSets.filter(set =>
         set.type == "tuple" && sameTile(tile, set.tiles[0])).length == 0)) {
     if (isShupai(tile)) {
-      candidates.push({
-        partialSets: progress.partialSets.concat([{tiles:[tile], type:"run"}]),
-        remaining: removeAndCopy(progress.remaining, tile),
-        useless: [...progress.useless],
-      });
+      if (roomForMoreRunsAndTriples) {
+        candidates.push({
+          partialSets: progress.partialSets.concat([{tiles:[tile], type:"run"}]),
+          remaining: removeAndCopy(progress.remaining, tile),
+          useless: [...progress.useless],
+        });
+      }
     }
     candidates.push({
       partialSets: progress.partialSets.concat([{tiles:[tile], type:"tuple"}]),
