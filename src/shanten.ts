@@ -96,27 +96,29 @@ function shantenRecurse(progress: ShantenProgress): number {
   })
 
   // try making new sets with first tile and other tiles
-  const otherRemainingTiles = [...progress.remaining];
-  otherRemainingTiles.splice(0,1);
-  const alreadyUsed = new Set<string>();
-  otherRemainingTiles.forEach(otherTile => {
-    const newSet = formSet(tile, otherTile);
-    const string = stringifySingle(otherTile);
-    if (newSet && !alreadyUsed.has(string) &&
-        !progress.partialSets.find(partialSet =>
-          partialSet.type === "tuple" &&
-          sameTile(partialSet.tiles[0], tile))) {
-      tileHasAFriend = true;
-      alreadyUsed.add(string);
+  if (progress.partialSets.length < 5) {
+    const otherRemainingTiles = [...progress.remaining];
+    otherRemainingTiles.splice(0,1);
+    const alreadyUsed = new Set<string>();
+    otherRemainingTiles.forEach(otherTile => {
+      const newSet = formSet(tile, otherTile);
+      const string = stringifySingle(otherTile);
+      if (newSet && !alreadyUsed.has(string) &&
+          !progress.partialSets.find(partialSet =>
+            partialSet.type === "tuple" &&
+            sameTile(partialSet.tiles[0], tile))) {
+        tileHasAFriend = true;
+        alreadyUsed.add(string);
 
-      candidates.push({
-        partialSets: [...progress.partialSets].concat([newSet]),
-        remaining: removeAndCopy(progress.remaining, tile, otherTile),
-        useless: [...progress.useless],
-        worstCaseShanten: progress.worstCaseShanten - 1
-      });
-    }
-  })
+        candidates.push({
+          partialSets: [...progress.partialSets].concat([newSet]),
+          remaining: removeAndCopy(progress.remaining, tile, otherTile),
+          useless: [...progress.useless],
+          worstCaseShanten: progress.worstCaseShanten - 1
+        });
+      }
+    })
+  }
 
   // if tile can't combine with anything, give up on using it
   if (!tileHasAFriend) {
