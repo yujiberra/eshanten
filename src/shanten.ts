@@ -84,14 +84,13 @@ function shantenRecurse(progress: ShantenProgress): number {
         tiles: partialSet.tiles.concat([tile]),
         type: partialSet.type
       }
-      const newProgress = {
+      candidates.push({
         partialSets: removeAndCopy(progress.partialSets, partialSet)
           .concat([newPartialSet]),
         remaining: removeAndCopy(progress.remaining, tile),
         useless: [...progress.useless],
         worstCaseShanten: progress.worstCaseShanten - 1
-      }
-      candidates.push(newProgress);
+      });
     }
   })
 
