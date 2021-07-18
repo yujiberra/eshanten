@@ -139,7 +139,7 @@ function shantenRecurse(progress: ShantenProgress): ShantenProgress[] {
   }
 
   const results = candidates.map(progress => shantenRecurse(progress));
-  const flattened = results[0].concat(...candidates.slice(1));
+  const flattened = results[0].concat(...results.slice(1));
   const minimum = Math.min(...flattened.map(progress => progress.worstCaseShanten));
   return flattened.filter(prog => prog.worstCaseShanten === minimum);
 }
