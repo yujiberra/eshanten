@@ -102,16 +102,11 @@ export function shantenRecurse(progress: ShantenProgress): ShantenProgress[] {
     }
   })
 
-  // try making new sets with first tile and other tiles
-  if (progress.partialSets.length < 5) {
-    if (progress.partialSets.filter(set =>
-        set.type == "tuple" && sameTile(tile, set.tiles[0])).length == 0) {
-      candidates.push({
-        partialSets: progress.partialSets.concat([{tiles:[tile], type:"tuple"}]),
-        remaining: removeAndCopy(progress.remaining, tile),
-        useless: [...progress.useless],
-      });
-    }
+  // try making a new set. only make a run if tuple doesn't exist, to prevent
+  // duplication.
+  if ((progress.partialSets.length < 5) &&
+      (progress.partialSets.filter(set =>
+        set.type == "tuple" && sameTile(tile, set.tiles[0])).length == 0)) {
     if (isShupai(tile)) {
       candidates.push({
         partialSets: progress.partialSets.concat([{tiles:[tile], type:"run"}]),
@@ -119,6 +114,11 @@ export function shantenRecurse(progress: ShantenProgress): ShantenProgress[] {
         useless: [...progress.useless],
       });
     }
+    candidates.push({
+      partialSets: progress.partialSets.concat([{tiles:[tile], type:"tuple"}]),
+      remaining: removeAndCopy(progress.remaining, tile),
+      useless: [...progress.useless],
+    });
   }
 
   // if tile can't combine with anything, give up on using it
