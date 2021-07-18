@@ -120,12 +120,12 @@ function shantenRecurse(progress: ShantenProgress): number {
 
   // if tile can't combine with anything, give up on using it
   if (!tileHasAFriend) {
-  candidates.push({
-    partialSets: [...progress.partialSets],
-    remaining: removeAndCopy(progress.remaining, tile),
-    useless: progress.useless.concat([tile]),
-    worstCaseShanten: progress.worstCaseShanten
-  })
+    candidates.push({
+      partialSets: [...progress.partialSets],
+      remaining: removeAndCopy(progress.remaining, tile),
+      useless: progress.useless.concat([tile]),
+      worstCaseShanten: progress.worstCaseShanten
+    })
   }
 
   return Math.min(...candidates.map(progress => shantenRecurse(progress)));
