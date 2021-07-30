@@ -61,7 +61,6 @@ export function fitsInSet(tile: Pai, partialSet: PartialSet): boolean {
 export function shanten(tiles: Pai[]): number {
   const results = shantenRecurse({partialSets: [], remaining: tiles,
     useless: []});
-  console.log(results.map(result => stringifyProgress(result)));
   return results[0].useless.length
 }
 
