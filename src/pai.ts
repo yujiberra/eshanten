@@ -1,33 +1,38 @@
 export type Pai = string;
 export type ShupaiType = "m" | "p" | "s";
 
-const manzus = new Set<Pai>();
-const pinzus = new Set<Pai>();
-const sozus = new Set<Pai>();
-const shupais = new Set<Pai>();
+const manzuSet = new Set<Pai>();
+const pinzuSet = new Set<Pai>();
+const sozuSet = new Set<Pai>();
+const shupaiSet = new Set<Pai>();
 const shupaiValues = new Map<Pai, number>();
-const akaDoras = new Set<Pai>();
+const akaDoraSet = new Set<Pai>();
 
-([["m", manzus], ["p", pinzus], ["s", sozus]] as [ShupaiType, Set<string>][])
+export const manzus = (): string[] => [...manzuSet];
+export const pinzus = (): string[] => [...pinzuSet];
+export const sozus = (): string[] => [...sozuSet];
+export const shupais = (): string[] => [...shupaiSet];
+
+([["m", manzuSet], ["p", pinzuSet], ["s", sozuSet]] as [ShupaiType, Set<string>][])
   .map(([char, set]) => {
     for (let i = 1; i <= 9; i++) {
       const tile = `${i}${char}`;
       set.add(tile);
-      shupais.add(tile);
+      shupaiSet.add(tile);
       shupaiValues.set(tile, i);
     }
     const akaDora = `r5${char}`
     set.add(akaDora);
-    shupais.add(akaDora);
-    akaDoras.add(akaDora);
+    shupaiSet.add(akaDora);
+    akaDoraSet.add(akaDora);
     shupaiValues.set(akaDora, 5);
   }
 );
 
 export function shupaiType(pai: Pai): ShupaiType {
-  if (manzus.has(pai)) return "m";
-  if (pinzus.has(pai)) return "p";
-  if (sozus.has(pai)) return "s";
+  if (manzuSet.has(pai)) return "m";
+  if (pinzuSet.has(pai)) return "p";
+  if (sozuSet.has(pai)) return "s";
   else throw new Error(`Tried to get type of invalid shupai ${pai}`);
 }
 
@@ -37,8 +42,12 @@ export function shupaiValue(pai: Pai): number {
   else throw new Error(`Tried to get value of invalid shupai ${pai}`);
 }
 
+export const isManzu = (pai: Pai): boolean => manzuSet.has(pai);
+export const isSozu = (pai: Pai): boolean => sozuSet.has(pai);
+export const isPinzu = (pai: Pai): boolean => pinzuSet.has(pai);
+
 export function isAkadora(pai: Pai): boolean {
-  return akaDoras.has(pai);
+  return akaDoraSet.has(pai);
 }
 
 export function isZupai(pai: Pai): boolean {
@@ -46,7 +55,7 @@ export function isZupai(pai: Pai): boolean {
 }
 
 export function isShupai(pai: Pai): boolean {
-  return shupais.has(pai);
+  return shupaiSet.has(pai);
 }
 
 const zupaiKanjiArray = ["東", "南", "西", "北", "白", "発發", "中"]
@@ -58,6 +67,9 @@ for (let i = 1; i <= 7; i++) {
   zupaiToKanji.set(zupai, zupaiKanjiArray[i-1]);
   zupaiToDigit.set(zupai, i);
 }
+
+export const zupais = (): string[] => [...zupaiToKanji.keys()]
+export const allTiles = (): string[] => [...manzuSet, ...pinzuSet, ...sozuSet, ...zupais()];
 
 export function numberToZupai(index: number): Pai {
   return `${index}z`;

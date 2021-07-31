@@ -1,32 +1,40 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.zupaisAndKanjis = exports.kanjiForZupai = exports.digitForZupai = exports.numberToZupai = exports.isShupai = exports.isZupai = exports.isAkadora = exports.shupaiValue = exports.shupaiType = void 0;
-const manzus = new Set();
-const pinzus = new Set();
-const sozus = new Set();
-const shupais = new Set();
+exports.zupaisAndKanjis = exports.kanjiForZupai = exports.digitForZupai = exports.numberToZupai = exports.allTiles = exports.zupais = exports.isShupai = exports.isZupai = exports.isAkadora = exports.isPinzu = exports.isSozu = exports.isManzu = exports.shupaiValue = exports.shupaiType = exports.shupais = exports.sozus = exports.pinzus = exports.manzus = void 0;
+const manzuSet = new Set();
+const pinzuSet = new Set();
+const sozuSet = new Set();
+const shupaiSet = new Set();
 const shupaiValues = new Map();
-const akaDoras = new Set();
-[["m", manzus], ["p", pinzus], ["s", sozus]]
+const akaDoraSet = new Set();
+const manzus = () => [...manzuSet];
+exports.manzus = manzus;
+const pinzus = () => [...pinzuSet];
+exports.pinzus = pinzus;
+const sozus = () => [...sozuSet];
+exports.sozus = sozus;
+const shupais = () => [...shupaiSet];
+exports.shupais = shupais;
+[["m", manzuSet], ["p", pinzuSet], ["s", sozuSet]]
     .map(([char, set]) => {
     for (let i = 1; i <= 9; i++) {
         const tile = `${i}${char}`;
         set.add(tile);
-        shupais.add(tile);
+        shupaiSet.add(tile);
         shupaiValues.set(tile, i);
     }
     const akaDora = `r5${char}`;
     set.add(akaDora);
-    shupais.add(akaDora);
-    akaDoras.add(akaDora);
+    shupaiSet.add(akaDora);
+    akaDoraSet.add(akaDora);
     shupaiValues.set(akaDora, 5);
 });
 function shupaiType(pai) {
-    if (manzus.has(pai))
+    if (manzuSet.has(pai))
         return "m";
-    if (pinzus.has(pai))
+    if (pinzuSet.has(pai))
         return "p";
-    if (sozus.has(pai))
+    if (sozuSet.has(pai))
         return "s";
     else
         throw new Error(`Tried to get type of invalid shupai ${pai}`);
@@ -40,8 +48,14 @@ function shupaiValue(pai) {
         throw new Error(`Tried to get value of invalid shupai ${pai}`);
 }
 exports.shupaiValue = shupaiValue;
+const isManzu = (pai) => manzuSet.has(pai);
+exports.isManzu = isManzu;
+const isSozu = (pai) => sozuSet.has(pai);
+exports.isSozu = isSozu;
+const isPinzu = (pai) => pinzuSet.has(pai);
+exports.isPinzu = isPinzu;
 function isAkadora(pai) {
-    return akaDoras.has(pai);
+    return akaDoraSet.has(pai);
 }
 exports.isAkadora = isAkadora;
 function isZupai(pai) {
@@ -49,7 +63,7 @@ function isZupai(pai) {
 }
 exports.isZupai = isZupai;
 function isShupai(pai) {
-    return shupais.has(pai);
+    return shupaiSet.has(pai);
 }
 exports.isShupai = isShupai;
 const zupaiKanjiArray = ["東", "南", "西", "北", "白", "発發", "中"];
@@ -60,6 +74,10 @@ for (let i = 1; i <= 7; i++) {
     zupaiToKanji.set(zupai, zupaiKanjiArray[i - 1]);
     zupaiToDigit.set(zupai, i);
 }
+const zupais = () => [...zupaiToKanji.keys()];
+exports.zupais = zupais;
+const allTiles = () => [...manzuSet, ...pinzuSet, ...sozuSet, ...exports.zupais()];
+exports.allTiles = allTiles;
 function numberToZupai(index) {
     return `${index}z`;
 }
