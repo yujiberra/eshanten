@@ -1,14 +1,14 @@
 export type Pai = string;
 export type ShupaiType = "m" | "p" | "s";
 
-const manzus = new Set<string>();
-const pinzus = new Set<string>();
-const sozus = new Set<string>();
-const shupais = new Set<string>();
-const shupaiValues = new Map<string, number>();
-const akaDoras = new Set<string>();
+const manzus = new Set<Pai>();
+const pinzus = new Set<Pai>();
+const sozus = new Set<Pai>();
+const shupais = new Set<Pai>();
+const shupaiValues = new Map<Pai, number>();
+const akaDoras = new Set<Pai>();
 
-([["m", manzus], ["p", pinzus], ["s", sozus]] as [string, Set<string>][])
+([["m", manzus], ["p", pinzus], ["s", sozus]] as [ShupaiType, Set<string>][])
   .map(([char, set]) => {
     for (let i = 1; i <= 9; i++) {
       const tile = `${i}${char}`;
@@ -23,20 +23,6 @@ const akaDoras = new Set<string>();
     shupaiValues.set(akaDora, 5);
   }
 );
-
-const zupaiKanjiArray = ["東", "南", "西", "北", "白", "発發", "中"]
-export const zupaiToKanji = new Map<Pai, string>();
-export const zupaiToDigit = new Map<Pai, number>();
-
-for (let i = 1; i <= 7; i++) {
-  const zupai = `${i}z`;
-  zupaiToKanji.set(zupai, zupaiKanjiArray[i-1]);
-  zupaiToDigit.set(zupai, i);
-}
-
-export function numberToZupai(index: number): string {
-  return `${index}z`;
-}
 
 export function shupaiType(pai: Pai): ShupaiType {
   if (manzus.has(pai)) return "m";
@@ -61,4 +47,18 @@ export function isZupai(pai: Pai): boolean {
 
 export function isShupai(pai: Pai): boolean {
   return shupais.has(pai);
+}
+
+const zupaiKanjiArray = ["東", "南", "西", "北", "白", "発發", "中"]
+export const zupaiToKanji = new Map<Pai, string>();
+export const zupaiToDigit = new Map<Pai, number>();
+
+for (let i = 1; i <= 7; i++) {
+  const zupai = `${i}z`;
+  zupaiToKanji.set(zupai, zupaiKanjiArray[i-1]);
+  zupaiToDigit.set(zupai, i);
+}
+
+export function numberToZupai(index: number): Pai {
+  return `${index}z`;
 }

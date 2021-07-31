@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.isShupai = exports.isZupai = exports.isAkadora = exports.shupaiValue = exports.shupaiType = exports.numberToZupai = exports.zupaiToDigit = exports.zupaiToKanji = void 0;
+exports.numberToZupai = exports.zupaiToDigit = exports.zupaiToKanji = exports.isShupai = exports.isZupai = exports.isAkadora = exports.shupaiValue = exports.shupaiType = void 0;
 const manzus = new Set();
 const pinzus = new Set();
 const sozus = new Set();
@@ -21,18 +21,6 @@ const akaDoras = new Set();
     akaDoras.add(akaDora);
     shupaiValues.set(akaDora, 5);
 });
-const zupaiKanjiArray = ["東", "南", "西", "北", "白", "発發", "中"];
-exports.zupaiToKanji = new Map();
-exports.zupaiToDigit = new Map();
-for (let i = 1; i <= 7; i++) {
-    const zupai = `${i}z`;
-    exports.zupaiToKanji.set(zupai, zupaiKanjiArray[i - 1]);
-    exports.zupaiToDigit.set(zupai, i);
-}
-function numberToZupai(index) {
-    return `${index}z`;
-}
-exports.numberToZupai = numberToZupai;
 function shupaiType(pai) {
     if (manzus.has(pai))
         return "m";
@@ -64,3 +52,15 @@ function isShupai(pai) {
     return shupais.has(pai);
 }
 exports.isShupai = isShupai;
+const zupaiKanjiArray = ["東", "南", "西", "北", "白", "発發", "中"];
+exports.zupaiToKanji = new Map();
+exports.zupaiToDigit = new Map();
+for (let i = 1; i <= 7; i++) {
+    const zupai = `${i}z`;
+    exports.zupaiToKanji.set(zupai, zupaiKanjiArray[i - 1]);
+    exports.zupaiToDigit.set(zupai, i);
+}
+function numberToZupai(index) {
+    return `${index}z`;
+}
+exports.numberToZupai = numberToZupai;
