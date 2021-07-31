@@ -1,8 +1,17 @@
 {
   "name": "eshanten",
   "version": "0.1.0",
-  "description": "",
+  "description": "Shanten calculation and other tools for riichi mahjong",
+  "private": true,
   "main": "dist/index.js",
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yujiberra/mj-react"
+  },
   "scripts": {
     "watch": "tsc --watch",
     "test": "nodemon --ext js --exec jasmine"
