@@ -1,3 +1,5 @@
+import { compare } from "./parse";
+
 export type Pai = string;
 export type ShupaiType = "m" | "p" | "s";
 
@@ -50,25 +52,27 @@ export function isAkadora(pai: Pai): boolean {
   return akaDoraSet.has(pai);
 }
 
-export function isZupai(pai: Pai): boolean {
-  return !isShupai(pai);
+export function isZupai(pai: string): boolean {
+  return zupaiSet.has(pai);
 }
 
-export function isShupai(pai: Pai): boolean {
+export function isShupai(pai: string): boolean {
   return shupaiSet.has(pai);
 }
 
 const zupaiKanjiArray = ["東", "南", "西", "北", "白", "発發", "中"]
 const zupaiToKanji = new Map<Pai, string>();
 const zupaiToDigit = new Map<Pai, number>();
+const zupaiSet = new Set<Pai>();
 
 for (let i = 1; i <= 7; i++) {
   const zupai = `${i}z`;
   zupaiToKanji.set(zupai, zupaiKanjiArray[i-1]);
   zupaiToDigit.set(zupai, i);
+  zupaiSet.add(zupai);
 }
 
-export const zupais = (): string[] => [...zupaiToKanji.keys()]
+export const zupais = (): string[] => [...zupaiSet]
 export const allTiles = (): string[] => [...manzuSet, ...pinzuSet, ...sozuSet, ...zupais()];
 
 export function numberToZupai(index: number): Pai {
@@ -93,4 +97,26 @@ export function kanjiForZupai(pai: Pai): string {
 
 export function zupaisAndKanjis(): [Pai, string][] {
   return [...zupaiToKanji];
+}
+
+export function validate(tiles: Pai[]): boolean {
+  if (tiles.length == 0) return true;
+
+  const sorted = tiles.sort(compare)
+
+  let previousTile = "invalid";
+  let count = 0;
+  for (const tile of sorted) {
+    if (tile == previousTile ||
+        isAkadora(previousTile) && isShupai(tile)
+        && shupaiType(previousTile) == shupaiType(tile)
+        && shupaiValue(tile) == 5) {
+      count++;
+      if (count > 4 || isAkadora(tile) && count > 1) return false;
+    } else {
+      previousTile = tile;
+      count = 1;
+    }
+  }
+  return true;
 }

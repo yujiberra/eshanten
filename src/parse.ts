@@ -26,7 +26,7 @@ export function rank(pai: Pai): number {
   }
 }
 
-function compare(pai1: Pai, pai2: Pai): number {
+export function compare(pai1: Pai, pai2: Pai): number {
   return rank(pai1) - rank(pai2);
 }
 

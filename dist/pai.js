@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.zupaisAndKanjis = exports.kanjiForZupai = exports.digitForZupai = exports.numberToZupai = exports.allTiles = exports.zupais = exports.isShupai = exports.isZupai = exports.isAkadora = exports.isPinzu = exports.isSozu = exports.isManzu = exports.shupaiValue = exports.shupaiType = exports.shupais = exports.sozus = exports.pinzus = exports.manzus = void 0;
+exports.validate = exports.zupaisAndKanjis = exports.kanjiForZupai = exports.digitForZupai = exports.numberToZupai = exports.allTiles = exports.zupais = exports.isShupai = exports.isZupai = exports.isAkadora = exports.isPinzu = exports.isSozu = exports.isManzu = exports.shupaiValue = exports.shupaiType = exports.shupais = exports.sozus = exports.pinzus = exports.manzus = void 0;
+const parse_1 = require("./parse");
 const manzuSet = new Set();
 const pinzuSet = new Set();
 const sozuSet = new Set();
@@ -59,7 +60,7 @@ function isAkadora(pai) {
 }
 exports.isAkadora = isAkadora;
 function isZupai(pai) {
-    return !isShupai(pai);
+    return zupaiSet.has(pai);
 }
 exports.isZupai = isZupai;
 function isShupai(pai) {
@@ -69,12 +70,14 @@ exports.isShupai = isShupai;
 const zupaiKanjiArray = ["東", "南", "西", "北", "白", "発發", "中"];
 const zupaiToKanji = new Map();
 const zupaiToDigit = new Map();
+const zupaiSet = new Set();
 for (let i = 1; i <= 7; i++) {
     const zupai = `${i}z`;
     zupaiToKanji.set(zupai, zupaiKanjiArray[i - 1]);
     zupaiToDigit.set(zupai, i);
+    zupaiSet.add(zupai);
 }
-const zupais = () => [...zupaiToKanji.keys()];
+const zupais = () => [...zupaiSet];
 exports.zupais = zupais;
 const allTiles = () => [...manzuSet, ...pinzuSet, ...sozuSet, ...exports.zupais()];
 exports.allTiles = allTiles;
@@ -102,3 +105,26 @@ function zupaisAndKanjis() {
     return [...zupaiToKanji];
 }
 exports.zupaisAndKanjis = zupaisAndKanjis;
+function validate(tiles) {
+    if (tiles.length == 0)
+        return true;
+    const sorted = tiles.sort(parse_1.compare);
+    let previousTile = "invalid";
+    let count = 0;
+    for (const tile of sorted) {
+        if (tile == previousTile ||
+            isAkadora(previousTile) && isShupai(tile)
+                && shupaiType(previousTile) == shupaiType(tile)
+                && shupaiValue(tile) == 5) {
+            count++;
+            if (count > 4 || isAkadora(tile) && count > 1)
+                return false;
+        }
+        else {
+            previousTile = tile;
+            count = 1;
+        }
+    }
+    return true;
+}
+exports.validate = validate;
