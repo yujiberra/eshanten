@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.numberToZupai = exports.zupaiToDigit = exports.zupaiToKanji = exports.isShupai = exports.isZupai = exports.isAkadora = exports.shupaiValue = exports.shupaiType = void 0;
+exports.zupaisAndKanjis = exports.kanjiForZupai = exports.digitForZupai = exports.numberToZupai = exports.isShupai = exports.isZupai = exports.isAkadora = exports.shupaiValue = exports.shupaiType = void 0;
 const manzus = new Set();
 const pinzus = new Set();
 const sozus = new Set();
@@ -53,14 +53,34 @@ function isShupai(pai) {
 }
 exports.isShupai = isShupai;
 const zupaiKanjiArray = ["東", "南", "西", "北", "白", "発發", "中"];
-exports.zupaiToKanji = new Map();
-exports.zupaiToDigit = new Map();
+const zupaiToKanji = new Map();
+const zupaiToDigit = new Map();
 for (let i = 1; i <= 7; i++) {
     const zupai = `${i}z`;
-    exports.zupaiToKanji.set(zupai, zupaiKanjiArray[i - 1]);
-    exports.zupaiToDigit.set(zupai, i);
+    zupaiToKanji.set(zupai, zupaiKanjiArray[i - 1]);
+    zupaiToDigit.set(zupai, i);
 }
 function numberToZupai(index) {
     return `${index}z`;
 }
 exports.numberToZupai = numberToZupai;
+function digitForZupai(pai) {
+    const value = zupaiToDigit.get(pai);
+    if (value == undefined) {
+        throw new Error(`Tried to get digit for invalid zupai ${pai}`);
+    }
+    return value;
+}
+exports.digitForZupai = digitForZupai;
+function kanjiForZupai(pai) {
+    const value = zupaiToKanji.get(pai);
+    if (value == undefined) {
+        throw new Error(`Tried to get kanji for invalid zupai ${pai}`);
+    }
+    return value.slice(0, 1);
+}
+exports.kanjiForZupai = kanjiForZupai;
+function zupaisAndKanjis() {
+    return [...zupaiToKanji];
+}
+exports.zupaisAndKanjis = zupaisAndKanjis;

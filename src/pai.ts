@@ -50,8 +50,8 @@ export function isShupai(pai: Pai): boolean {
 }
 
 const zupaiKanjiArray = ["東", "南", "西", "北", "白", "発發", "中"]
-export const zupaiToKanji = new Map<Pai, string>();
-export const zupaiToDigit = new Map<Pai, number>();
+const zupaiToKanji = new Map<Pai, string>();
+const zupaiToDigit = new Map<Pai, number>();
 
 for (let i = 1; i <= 7; i++) {
   const zupai = `${i}z`;
@@ -61,4 +61,24 @@ for (let i = 1; i <= 7; i++) {
 
 export function numberToZupai(index: number): Pai {
   return `${index}z`;
+}
+
+export function digitForZupai(pai: Pai): number {
+  const value = zupaiToDigit.get(pai);
+  if (value == undefined) {
+    throw new Error(`Tried to get digit for invalid zupai ${pai}`);
+  }
+  return value;
+}
+
+export function kanjiForZupai(pai: Pai): string {
+  const value = zupaiToKanji.get(pai);
+  if (value == undefined) {
+    throw new Error(`Tried to get kanji for invalid zupai ${pai}`);
+  }
+  return value.slice(0,1);
+}
+
+export function zupaisAndKanjis(): [Pai, string][] {
+  return [...zupaiToKanji];
 }

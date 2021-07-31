@@ -1,7 +1,6 @@
-import { isAkadora, isShupai, numberToZupai, Pai, shupaiType, ShupaiType,
+import { digitForZupai, isAkadora, isShupai, kanjiForZupai, numberToZupai, Pai, shupaiType, ShupaiType,
   shupaiValue,
-  zupaiToDigit,
-  zupaiToKanji} from "./pai";
+  zupaisAndKanjis} from "./pai";
 
 export type PaiOrString = Pai | string;
 
@@ -23,7 +22,7 @@ export function rank(pai: Pai): number {
     }
     return tens + shupaiValue(pai) - (isAkadora(pai) ? 0.5 : 0);
   } else {
-    return 30 + (zupaiToDigit.get(pai) || 0);
+    return 30 + (digitForZupai(pai) || 0);
   }
 }
 
@@ -39,7 +38,7 @@ export function parse(input: string): Pai[] {
   const pais: Pai[] = [];
 
   // parse kanji-represented zupai
-  for (const [pai, representation] of zupaiToKanji) {
+  for (const [pai, representation] of zupaisAndKanjis()) {
     const regex = new RegExp('[' + representation + ']', 'g');
     const count = input.match(regex)?.length || 0;
     const additions = new Array<Pai>(count).fill(pai);
@@ -120,7 +119,7 @@ export function stringify(pais: Pai[]): string {
         output += currentShupaiType;
         currentShupaiType = undefined;
       }
-      output += pais.slice(i).map(pai => zupaiToKanji.get(pai)?.slice(0,1)).join('');
+      output += pais.slice(i).map(pai => kanjiForZupai(pai)).join('');
       break;
     }
   }

@@ -21,7 +21,7 @@ function rank(pai) {
         return tens + pai_1.shupaiValue(pai) - (pai_1.isAkadora(pai) ? 0.5 : 0);
     }
     else {
-        return 30 + (pai_1.zupaiToDigit.get(pai) || 0);
+        return 30 + (pai_1.digitForZupai(pai) || 0);
     }
 }
 exports.rank = rank;
@@ -36,7 +36,7 @@ function parse(input) {
     var _a;
     const pais = [];
     // parse kanji-represented zupai
-    for (const [pai, representation] of pai_1.zupaiToKanji) {
+    for (const [pai, representation] of pai_1.zupaisAndKanjis()) {
         const regex = new RegExp('[' + representation + ']', 'g');
         const count = ((_a = input.match(regex)) === null || _a === void 0 ? void 0 : _a.length) || 0;
         const additions = new Array(count).fill(pai);
@@ -115,7 +115,7 @@ function stringify(pais) {
                 output += currentShupaiType;
                 currentShupaiType = undefined;
             }
-            output += pais.slice(i).map(pai => { var _a; return (_a = pai_1.zupaiToKanji.get(pai)) === null || _a === void 0 ? void 0 : _a.slice(0, 1); }).join('');
+            output += pais.slice(i).map(pai => pai_1.kanjiForZupai(pai)).join('');
             break;
         }
     }
