@@ -1,50 +1,64 @@
-export type Pai = Shupai | Zupai;
+export type Pai = string;
+export type ShupaiType = "m" | "p" | "s";
 
-export interface Shupai {
-  type: ShupaiType;
-  value: number;
-  aka: boolean;
+const manzus = new Set<string>();
+const pinzus = new Set<string>();
+const sozus = new Set<string>();
+const shupais = new Set<string>();
+const shupaiValues = new Map<string, number>();
+const akaDoras = new Set<string>();
+
+([["m", manzus], ["p", pinzus], ["s", sozus]] as [string, Set<string>][])
+  .map(([char, set]) => {
+    for (let i = 1; i <= 9; i++) {
+      const tile = `${i}${char}`;
+      set.add(tile);
+      shupais.add(tile);
+      shupaiValues.set(tile, i);
+    }
+    const akaDora = `r5${char}`
+    set.add(akaDora);
+    shupais.add(akaDora);
+    akaDoras.add(akaDora);
+    shupaiValues.set(akaDora, 5);
+  }
+);
+
+const zupaiKanjiArray = ["東", "南", "西", "北", "白", "発發", "中"]
+export const zupaiToKanji = new Map<Pai, string>();
+export const zupaiToDigit = new Map<Pai, number>();
+
+for (let i = 1; i <= 7; i++) {
+  const zupai = `${i}z`;
+  zupaiToKanji.set(zupai, zupaiKanjiArray[i-1]);
+  zupaiToDigit.set(zupai, i);
 }
 
-export type ShupaiType = "manzu" | "sozu" | "pinzu";
-
-export type Zupai = Fonpai | Yakuhai;
-export type Fonpai = "ton" | "nan" | "sha" | "pe";
-export type Yakuhai = "haku" | "hatsu" | "chun";
-
-export function isZupai(pai: Pai): pai is Zupai {
-  return typeof pai === 'string';
+export function numberToZupai(index: number): string {
+  return `${index}z`;
 }
 
-export function isShupai(pai: Pai): pai is Shupai {
-  return typeof pai !== 'string';
+export function shupaiType(pai: Pai): ShupaiType {
+  if (manzus.has(pai)) return "m";
+  if (pinzus.has(pai)) return "p";
+  if (sozus.has(pai)) return "s";
+  else throw new Error(`Tried to get type of invalid shupai ${pai}`);
 }
 
-export const yakuhaiCharacters: Map<Pai, string> =
-  new Map([
-    ["ton", "東"],
-    ["nan", "南"],
-    ["sha", "西"],
-    ["pe", "北"],
-    ["haku", "白"],
-    ["hatsu", "発發"],
-    ["chun", "中"],
-  ]);
+export function shupaiValue(pai: Pai): number {
+  const value = shupaiValues.get(pai);
+  if (value !== undefined) return value;
+  else throw new Error(`Tried to get value of invalid shupai ${pai}`);
+}
 
-const yakuhaiDigitArray: [number, Pai][] = [
-  [1, "ton"],
-  [2, "nan"],
-  [3, "sha"],
-  [4, "pe"],
-  [5, "haku"],
-  [6, "hatsu"],
-  [7, "chun"],
-];
+export function isAkadora(pai: Pai): boolean {
+  return akaDoras.has(pai);
+}
 
-export const reverseYakuhaiDigitArray =
-  [...yakuhaiDigitArray.map(e => e.slice().reverse())] as [Zupai, number][];
+export function isZupai(pai: Pai): boolean {
+  return !isShupai(pai);
+}
 
-export const yakuhaiDigits: Map<number, Pai> =
-  new Map(yakuhaiDigitArray);
-
-export const reverseYakuhaiDigits = new Map(reverseYakuhaiDigitArray);
+export function isShupai(pai: Pai): boolean {
+  return shupais.has(pai);
+}

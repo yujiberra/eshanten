@@ -1,29 +1,30 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.stringify = exports.stringifySingle = exports.parse = exports.parseSingle = void 0;
+exports.stringify = exports.stringifySingle = exports.parse = exports.parseSingle = exports.rank = void 0;
 const pai_1 = require("./pai");
 function rank(pai) {
     if (pai_1.isShupai(pai)) {
         let tens;
-        switch (pai.type) {
-            case "manzu":
+        switch (pai_1.shupaiType(pai)) {
+            case "m":
                 tens = 0;
                 break;
-            case "pinzu":
+            case "p":
                 tens = 10;
                 break;
-            case "sozu":
+            case "s":
                 tens = 20;
                 break;
             default:
                 throw new Error("Invalid ShupaiType character"); // shouldn't ever happen
         }
-        return tens + pai.value - (pai.aka ? 0.5 : 0);
+        return tens + pai_1.shupaiValue(pai) - (pai_1.isAkadora(pai) ? 0.5 : 0);
     }
     else {
-        return 30 + (pai_1.reverseYakuhaiDigits.get(pai) || 0);
+        return 30 + (pai_1.zupaiToDigit.get(pai) || 0);
     }
 }
+exports.rank = rank;
 function compare(pai1, pai2) {
     return rank(pai1) - rank(pai2);
 }
@@ -35,7 +36,7 @@ function parse(input) {
     var _a;
     const pais = [];
     // parse kanji-represented zupai
-    for (const [pai, representation] of pai_1.yakuhaiCharacters) {
+    for (const [pai, representation] of pai_1.zupaiToKanji) {
         const regex = new RegExp('[' + representation + ']', 'g');
         const count = ((_a = input.match(regex)) === null || _a === void 0 ? void 0 : _a.length) || 0;
         const additions = new Array(count).fill(pai);
@@ -47,7 +48,7 @@ function parse(input) {
     if (zupaiMatch) {
         const zupaiString = zupaiMatch[0];
         [...zupaiString.slice(0, -1)].forEach(char => {
-            pais.push(pai_1.yakuhaiDigits.get(parseInt(char)));
+            pais.push(pai_1.numberToZupai(parseInt(char)));
         });
     }
     // parse 数牌
@@ -57,40 +58,32 @@ function parse(input) {
         let shupaiType;
         switch (lastChar) {
             case "m":
-                shupaiType = "manzu";
+                shupaiType = "m";
                 break;
             case "s":
-                shupaiType = "sozu";
+                shupaiType = "s";
                 break;
             case "p":
-                shupaiType = "pinzu";
+                shupaiType = "p";
                 break;
             default:
                 throw new Error("Invalid ShupaiType character"); // shouldn't ever happen
         }
         // extract akadora
         if (colorString.match("r5")) {
-            pais.push({
-                type: shupaiType,
-                value: 5,
-                aka: true,
-            });
+            pais.push(`r5${shupaiType}`);
             colorString = colorString.replace(/r5/g, "");
         }
         // parse remaining tiles
         [...colorString.slice(0, -1)].forEach(char => {
-            pais.push({
-                type: shupaiType,
-                value: parseInt(char),
-                aka: false
-            });
+            pais.push(`${parseInt(char)}${shupaiType}`);
         });
     });
     return pais.sort(compare);
 }
 exports.parse = parse;
-function stringifySingleShupai(pai) {
-    return (pai.aka ? "r" : "") + pai.value.toString();
+function stringifySingleShupaiInSequence(pai) {
+    return `${pai_1.isAkadora(pai) ? "r" : ""}${pai_1.shupaiValue(pai)}`;
 }
 function stringifySingle(pai) {
     return stringify([pai]);
@@ -103,34 +96,31 @@ function stringify(pais) {
         const pai = pais[i];
         if (pai_1.isShupai(pai)) {
             if (currentShupaiType) {
-                if (currentShupaiType == pai.type) {
-                    output += stringifySingleShupai(pai);
+                if (currentShupaiType == pai_1.shupaiType(pai)) {
+                    output += stringifySingleShupaiInSequence(pai);
                 }
                 else {
-                    output += currentShupaiType.slice(0, 1);
-                    currentShupaiType = pai.type;
-                    output += stringifySingleShupai(pai);
+                    output += currentShupaiType;
+                    currentShupaiType = pai_1.shupaiType(pai);
+                    output += stringifySingleShupaiInSequence(pai);
                 }
             }
             else {
-                currentShupaiType = pai.type;
-                output += stringifySingleShupai(pai);
+                currentShupaiType = pai_1.shupaiType(pai);
+                output += stringifySingleShupaiInSequence(pai);
             }
         }
         else {
             if (currentShupaiType) {
-                output += currentShupaiType.slice(0, 1);
+                output += currentShupaiType;
                 currentShupaiType = undefined;
             }
-            output += pais.slice(i).map(pai => {
-                const maybeString = pai_1.yakuhaiCharacters.get(pai);
-                return maybeString ? maybeString.slice(0, 1) : "";
-            }).join('');
+            output += pais.slice(i).map(pai => { var _a; return (_a = pai_1.zupaiToKanji.get(pai)) === null || _a === void 0 ? void 0 : _a.slice(0, 1); }).join('');
             break;
         }
     }
     if (currentShupaiType) {
-        output += currentShupaiType.slice(0, 1);
+        output += currentShupaiType;
     }
     return output;
 }

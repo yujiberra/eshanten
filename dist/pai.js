@@ -1,32 +1,66 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.reverseYakuhaiDigits = exports.yakuhaiDigits = exports.reverseYakuhaiDigitArray = exports.yakuhaiCharacters = exports.isShupai = exports.isZupai = void 0;
+exports.isShupai = exports.isZupai = exports.isAkadora = exports.shupaiValue = exports.shupaiType = exports.numberToZupai = exports.zupaiToDigit = exports.zupaiToKanji = void 0;
+const manzus = new Set();
+const pinzus = new Set();
+const sozus = new Set();
+const shupais = new Set();
+const shupaiValues = new Map();
+const akaDoras = new Set();
+[["m", manzus], ["p", pinzus], ["s", sozus]]
+    .map(([char, set]) => {
+    for (let i = 1; i <= 9; i++) {
+        const tile = `${i}${char}`;
+        set.add(tile);
+        shupais.add(tile);
+        shupaiValues.set(tile, i);
+    }
+    const akaDora = `r5${char}`;
+    set.add(akaDora);
+    shupais.add(akaDora);
+    akaDoras.add(akaDora);
+    shupaiValues.set(akaDora, 5);
+});
+const zupaiKanjiArray = ["東", "南", "西", "北", "白", "発發", "中"];
+exports.zupaiToKanji = new Map();
+exports.zupaiToDigit = new Map();
+for (let i = 1; i <= 7; i++) {
+    const zupai = `${i}z`;
+    exports.zupaiToKanji.set(zupai, zupaiKanjiArray[i - 1]);
+    exports.zupaiToDigit.set(zupai, i);
+}
+function numberToZupai(index) {
+    return `${index}z`;
+}
+exports.numberToZupai = numberToZupai;
+function shupaiType(pai) {
+    if (manzus.has(pai))
+        return "m";
+    if (pinzus.has(pai))
+        return "p";
+    if (sozus.has(pai))
+        return "s";
+    else
+        throw new Error(`Tried to get type of invalid shupai ${pai}`);
+}
+exports.shupaiType = shupaiType;
+function shupaiValue(pai) {
+    const value = shupaiValues.get(pai);
+    if (value !== undefined)
+        return value;
+    else
+        throw new Error(`Tried to get value of invalid shupai ${pai}`);
+}
+exports.shupaiValue = shupaiValue;
+function isAkadora(pai) {
+    return akaDoras.has(pai);
+}
+exports.isAkadora = isAkadora;
 function isZupai(pai) {
-    return typeof pai === 'string';
+    return !isShupai(pai);
 }
 exports.isZupai = isZupai;
 function isShupai(pai) {
-    return typeof pai !== 'string';
+    return shupais.has(pai);
 }
 exports.isShupai = isShupai;
-exports.yakuhaiCharacters = new Map([
-    ["ton", "東"],
-    ["nan", "南"],
-    ["sha", "西"],
-    ["pe", "北"],
-    ["haku", "白"],
-    ["hatsu", "発發"],
-    ["chun", "中"],
-]);
-const yakuhaiDigitArray = [
-    [1, "ton"],
-    [2, "nan"],
-    [3, "sha"],
-    [4, "pe"],
-    [5, "haku"],
-    [6, "hatsu"],
-    [7, "chun"],
-];
-exports.reverseYakuhaiDigitArray = [...yakuhaiDigitArray.map(e => e.slice().reverse())];
-exports.yakuhaiDigits = new Map(yakuhaiDigitArray);
-exports.reverseYakuhaiDigits = new Map(exports.reverseYakuhaiDigitArray);

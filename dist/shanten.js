@@ -11,21 +11,18 @@ function stringifyProgress({ partialSets, remaining, useless }) {
 }
 exports.stringifyProgress = stringifyProgress;
 function sameTile(pai1, pai2) {
-    if (pai_1.isZupai(pai1)) {
-        return pai_1.isZupai(pai2) && pai1 === pai2;
-    }
-    else {
-        return pai_1.isShupai(pai2) && pai1.type === pai2.type &&
-            pai1.value === pai2.value;
-    }
+    return pai1 == pai2 || pai_1.isShupai(pai1) && pai_1.isShupai(pai2) &&
+        pai_1.shupaiType(pai1) === pai_1.shupaiType(pai2) &&
+        pai_1.shupaiValue(pai1) === pai_1.shupaiValue(pai2);
 }
 exports.sameTile = sameTile;
 function formSet(tile1, tile2) {
     if (sameTile(tile1, tile2)) {
         return { tiles: [tile1, tile2], type: "tuple" };
     }
-    else if (pai_1.isShupai(tile1) && pai_1.isShupai(tile2) && (tile1.type === tile2.type) &&
-        (Math.abs(tile1.value - tile2.value) <= 2)) {
+    else if (pai_1.isShupai(tile1) && pai_1.isShupai(tile2) &&
+        (pai_1.shupaiType(tile1) === pai_1.shupaiType(tile2)) &&
+        (Math.abs(pai_1.shupaiValue(tile1) - pai_1.shupaiValue(tile2)) <= 2)) {
         return { tiles: [tile1, tile2], type: "run" };
     }
     else {
@@ -41,11 +38,11 @@ function fitsInSet(tile, partialSet) {
         return sameTile(tile, partialSet.tiles[0]);
     }
     else {
-        if (pai_1.isShupai(tile) && tile.type === partialSet.tiles[0].type) {
-            const allTiles = partialSet.tiles.concat(tile).map(tile => tile.value);
-            const set = new Set(allTiles);
-            const range = Math.max(...allTiles) - Math.min(...allTiles);
-            return [...set].length == allTiles.length && range <= 2;
+        if (pai_1.isShupai(tile) && pai_1.shupaiType(tile) === pai_1.shupaiType(partialSet.tiles[0])) {
+            const allTileValues = partialSet.tiles.concat(tile).map(tile => pai_1.shupaiValue(tile));
+            const set = new Set(allTileValues);
+            const range = Math.max(...allTileValues) - Math.min(...allTileValues);
+            return [...set].length == allTileValues.length && range <= 2;
         }
         else {
             return false;
@@ -79,7 +76,7 @@ function shantenRecurse(progress) {
         // to prevent double-counting (since 12m + 3m happens earlier)
         if (fitsInSet(tile, partialSet) &&
             ((partialSet.type == 'tuple' && ((partialSet.tiles.length == 1) || roomForMoreRunsAndTriples)) ||
-                Math.max(...partialSet.tiles.map(tile => tile.value)) < tile.value)) {
+                (pai_1.isShupai(partialSet.tiles[0]) && Math.max(...partialSet.tiles.map(t => pai_1.shupaiValue(t))) < pai_1.shupaiValue(tile)))) {
             tileHasAFriend = true;
             const newPartialSet = {
                 tiles: partialSet.tiles.concat([tile]),

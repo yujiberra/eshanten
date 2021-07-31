@@ -1,9 +1,12 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.shantenRecurse = exports.sameTile = exports.shanten = exports.stringify = exports.parseSingle = exports.parse = exports.isShupai = exports.isZupai = void 0;
+exports.shantenRecurse = exports.sameTile = exports.shanten = exports.stringify = exports.parseSingle = exports.parse = exports.isAkadora = exports.shupaiValue = exports.shupaiType = exports.isShupai = exports.isZupai = void 0;
 const pai_1 = require("./pai");
 Object.defineProperty(exports, "isZupai", { enumerable: true, get: function () { return pai_1.isZupai; } });
 Object.defineProperty(exports, "isShupai", { enumerable: true, get: function () { return pai_1.isShupai; } });
+Object.defineProperty(exports, "shupaiType", { enumerable: true, get: function () { return pai_1.shupaiType; } });
+Object.defineProperty(exports, "shupaiValue", { enumerable: true, get: function () { return pai_1.shupaiValue; } });
+Object.defineProperty(exports, "isAkadora", { enumerable: true, get: function () { return pai_1.isAkadora; } });
 const parse_1 = require("./parse");
 Object.defineProperty(exports, "parse", { enumerable: true, get: function () { return parse_1.parse; } });
 Object.defineProperty(exports, "parseSingle", { enumerable: true, get: function () { return parse_1.parseSingle; } });

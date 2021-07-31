@@ -1,4 +1,4 @@
-import { isShupai, isZupai, Pai, Shupai } from "./pai";
+import { isShupai, Pai, shupaiType, shupaiValue } from "./pai";
 import { stringify } from "./parse";
 
 export interface PartialSet {
@@ -22,19 +22,17 @@ export function stringifyProgress({ partialSets, remaining, useless }: ShantenPr
 }
 
 export function sameTile(pai1: Pai, pai2: Pai): boolean {
-  if (isZupai(pai1)) {
-    return isZupai(pai2) && pai1 === pai2;
-  } else {
-    return isShupai(pai2) && pai1.type === pai2.type &&
-      pai1.value === pai2.value;
-  }
+  return pai1 == pai2 || isShupai(pai1) && isShupai(pai2) &&
+    shupaiType(pai1) === shupaiType(pai2) &&
+    shupaiValue(pai1) === shupaiValue(pai2);
 }
 
 export function formSet(tile1: Pai, tile2: Pai): PartialSet | null {
   if (sameTile(tile1, tile2)) {
     return { tiles: [tile1, tile2], type: "tuple" };
-  } else if (isShupai(tile1) && isShupai(tile2) && (tile1.type === tile2.type) &&
-             (Math.abs(tile1.value - tile2.value) <= 2)) {
+  } else if (isShupai(tile1) && isShupai(tile2) &&
+             (shupaiType(tile1) === shupaiType(tile2)) &&
+             (Math.abs(shupaiValue(tile1) - shupaiValue(tile2)) <= 2)) {
     return { tiles: [tile1, tile2], type: "run" };
   } else {
     return null;
@@ -47,11 +45,12 @@ export function fitsInSet(tile: Pai, partialSet: PartialSet): boolean {
   } else if (partialSet.type === "tuple") {
     return sameTile(tile, partialSet.tiles[0]);
   } else {
-    if (isShupai(tile) && tile.type === (partialSet.tiles[0] as Shupai).type) {
-      const allTiles = partialSet.tiles.concat(tile).map(tile => (tile as Shupai).value);
-      const set = new Set(allTiles);
-      const range = Math.max(...allTiles) - Math.min(...allTiles);
-      return [...set].length == allTiles.length && range <= 2;
+    if (isShupai(tile) && shupaiType(tile) === shupaiType(partialSet.tiles[0])) {
+      const allTileValues =
+        partialSet.tiles.concat(tile).map(tile => shupaiValue(tile));
+      const set = new Set(allTileValues);
+      const range = Math.max(...allTileValues) - Math.min(...allTileValues);
+      return [...set].length == allTileValues.length && range <= 2;
     } else {
       return false;
     }
@@ -89,7 +88,7 @@ export function shantenRecurse(progress: ShantenProgress): ShantenProgress[] {
     // to prevent double-counting (since 12m + 3m happens earlier)
     if (fitsInSet(tile, partialSet) &&
         ((partialSet.type == 'tuple' && ((partialSet.tiles.length == 1)  || roomForMoreRunsAndTriples)) ||
-          Math.max(...partialSet.tiles.map(tile => (tile as Shupai).value)) < (tile as Shupai).value)) {
+          (isShupai(partialSet.tiles[0]) && Math.max(...partialSet.tiles.map(t => shupaiValue(t))) < shupaiValue(tile)))) {
       tileHasAFriend = true;
       const newPartialSet = {
         tiles: partialSet.tiles.concat([tile]),
