@@ -2,32 +2,6 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const parse_1 = require("./parse");
 const shanten_1 = require("./shanten");
-describe("sameTile", function () {
-    it("should identify identical zupai", function () {
-        expect(shanten_1.sameTile(parse_1.parseSingle("3z"), parse_1.parseSingle("3z"))).toBeTrue();
-        expect(shanten_1.sameTile(parse_1.parseSingle("5z"), parse_1.parseSingle("5z"))).toBeTrue();
-    });
-    it("should distinguish distinct zupai", function () {
-        expect(shanten_1.sameTile(parse_1.parseSingle("3z"), parse_1.parseSingle("1z"))).toBeFalse();
-        expect(shanten_1.sameTile(parse_1.parseSingle("5z"), parse_1.parseSingle("6z"))).toBeFalse();
-    });
-    it("should distinguish zupai and shupai", function () {
-        expect(shanten_1.sameTile(parse_1.parseSingle("7z"), parse_1.parseSingle("3m"))).toBeFalse();
-        expect(shanten_1.sameTile(parse_1.parseSingle("r5p"), parse_1.parseSingle("7z"))).toBeFalse();
-    });
-    it("should distinguish same-number Shupai from different suits", function () {
-        expect(shanten_1.sameTile(parse_1.parseSingle("3m"), parse_1.parseSingle("3p"))).toBeFalse();
-    });
-    it("should distinguish different-number Shupai from the same suit", function () {
-        expect(shanten_1.sameTile(parse_1.parseSingle("4p"), parse_1.parseSingle("3p"))).toBeFalse();
-    });
-    it("should identify same-number Shupai from the same suit", function () {
-        expect(shanten_1.sameTile(parse_1.parseSingle("4p"), parse_1.parseSingle("4p"))).toBeTrue();
-    });
-    it("should identify same-number Shupai from the same suit, even if one is dora", function () {
-        expect(shanten_1.sameTile(parse_1.parseSingle("r5p"), parse_1.parseSingle("5p"))).toBeTrue();
-    });
-});
 describe("fitsInSet", function () {
     it("should correctly identify what fits into a singleton tuple", function () {
         const nanPair = { tiles: parse_1.parse("2z"), type: "tuple" };

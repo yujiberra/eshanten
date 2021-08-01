@@ -1,38 +1,5 @@
 import { parse, parseSingle as parseOne } from "./parse";
-import { fitsInSet, PartialSet, sameTile, shanten, shantenRecurse } from "./shanten"
-
-describe("sameTile", function() {
-  it("should identify identical zupai", function() {
-    expect(sameTile(parseOne("3z"), parseOne("3z"))).toBeTrue();
-    expect(sameTile(parseOne("5z"), parseOne("5z"))).toBeTrue();
-  });
-
-  it ("should distinguish distinct zupai", function() {
-    expect(sameTile(parseOne("3z"), parseOne("1z"))).toBeFalse();
-    expect(sameTile(parseOne("5z"), parseOne("6z"))).toBeFalse();
-  });
-
-  it("should distinguish zupai and shupai", function() {
-    expect(sameTile(parseOne("7z"), parseOne("3m"))).toBeFalse();
-    expect(sameTile(parseOne("r5p"), parseOne("7z"))).toBeFalse();
-  })
-
-  it("should distinguish same-number Shupai from different suits", function() {
-    expect(sameTile(parseOne("3m"), parseOne("3p"))).toBeFalse();
-  })
-
-  it("should distinguish different-number Shupai from the same suit", function() {
-    expect(sameTile(parseOne("4p"), parseOne("3p"))).toBeFalse();
-  })
-
-  it("should identify same-number Shupai from the same suit", function() {
-    expect(sameTile(parseOne("4p"), parseOne("4p"))).toBeTrue();
-  })
-
-  it("should identify same-number Shupai from the same suit, even if one is dora", function() {
-    expect(sameTile(parseOne("r5p"), parseOne("5p"))).toBeTrue();
-  })
-});
+import { fitsInSet, PartialSet, shanten, shantenRecurse } from "./shanten"
 
 describe("fitsInSet", function() {
   it ("should correctly identify what fits into a singleton tuple", function() {

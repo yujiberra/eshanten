@@ -99,6 +99,12 @@ export function zupaisAndKanjis(): [Pai, string][] {
   return [...zupaiToKanji];
 }
 
+export function sameValue(pai1: Pai, pai2: Pai): boolean {
+  return pai1 == pai2 || isShupai(pai1) && isShupai(pai2) &&
+    shupaiType(pai1) === shupaiType(pai2) &&
+    shupaiValue(pai1) === shupaiValue(pai2);
+}
+
 export function validate(tiles: Pai[]): boolean {
   if (tiles.length == 0) return true;
 
@@ -107,10 +113,7 @@ export function validate(tiles: Pai[]): boolean {
   let previousTile = "invalid";
   let count = 0;
   for (const tile of sorted) {
-    if (tile == previousTile ||
-        isAkadora(previousTile) && isShupai(tile)
-        && shupaiType(previousTile) == shupaiType(tile)
-        && shupaiValue(tile) == 5) {
+    if (sameValue(tile, previousTile)) {
       count++;
       if (count > 4 || isAkadora(tile) && count > 1) return false;
     } else {

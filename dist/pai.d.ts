@@ -18,4 +18,5 @@ export declare function numberToZupai(index: number): Pai;
 export declare function digitForZupai(pai: Pai): number;
 export declare function kanjiForZupai(pai: Pai): string;
 export declare function zupaisAndKanjis(): [Pai, string][];
+export declare function sameValue(pai1: Pai, pai2: Pai): boolean;
 export declare function validate(tiles: Pai[]): boolean;

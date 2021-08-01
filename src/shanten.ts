@@ -1,4 +1,4 @@
-import { isShupai, Pai, shupaiType, shupaiValue } from "./pai";
+import { isShupai, Pai, shupaiType, shupaiValue, sameValue } from "./pai";
 import { stringify } from "./parse";
 
 export interface PartialSet {
@@ -21,14 +21,8 @@ export function stringifyProgress({ partialSets, remaining, useless }: ShantenPr
   return `Sets: ${sets.toString()} / Useless: ${uselessStr} ${remainingStr}/ Shanten = ${useless.length}`
 }
 
-export function sameTile(pai1: Pai, pai2: Pai): boolean {
-  return pai1 == pai2 || isShupai(pai1) && isShupai(pai2) &&
-    shupaiType(pai1) === shupaiType(pai2) &&
-    shupaiValue(pai1) === shupaiValue(pai2);
-}
-
 export function formSet(tile1: Pai, tile2: Pai): PartialSet | null {
-  if (sameTile(tile1, tile2)) {
+  if (sameValue(tile1, tile2)) {
     return { tiles: [tile1, tile2], type: "tuple" };
   } else if (isShupai(tile1) && isShupai(tile2) &&
              (shupaiType(tile1) === shupaiType(tile2)) &&
@@ -43,7 +37,7 @@ export function fitsInSet(tile: Pai, partialSet: PartialSet): boolean {
   if (partialSet.tiles.length > 2) {
     return false;
   } else if (partialSet.type === "tuple") {
-    return sameTile(tile, partialSet.tiles[0]);
+    return sameValue(tile, partialSet.tiles[0]);
   } else {
     if (isShupai(tile) && shupaiType(tile) === shupaiType(partialSet.tiles[0])) {
       const allTileValues =
@@ -107,7 +101,7 @@ export function shantenRecurse(progress: ShantenProgress): ShantenProgress[] {
   // duplication.
   if ((progress.partialSets.length < 5) &&
       (progress.partialSets.filter(set =>
-        set.type == "tuple" && sameTile(tile, set.tiles[0])).length == 0)) {
+        set.type == "tuple" && sameValue(tile, set.tiles[0])).length == 0)) {
     if (isShupai(tile)) {
       if (roomForMoreRunsAndTriples) {
         candidates.push({
@@ -127,7 +121,7 @@ export function shantenRecurse(progress: ShantenProgress): ShantenProgress[] {
   // if tile can't combine with anything, give up on using it
   if (!tileHasAFriend) {
     const index = progress.remaining.indexOf(tile);
-    const matches = progress.remaining.filter(t => sameTile(t, tile));
+    const matches = progress.remaining.filter(t => sameValue(t, tile));
     const newRemaining = [...progress.remaining];
     newRemaining.splice(index, matches.length);
     candidates.push({

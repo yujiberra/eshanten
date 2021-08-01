@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.validate = exports.zupaisAndKanjis = exports.kanjiForZupai = exports.digitForZupai = exports.numberToZupai = exports.allTiles = exports.zupais = exports.isShupai = exports.isZupai = exports.isAkadora = exports.isPinzu = exports.isSozu = exports.isManzu = exports.shupaiValue = exports.shupaiType = exports.shupais = exports.sozus = exports.pinzus = exports.manzus = void 0;
+exports.validate = exports.sameValue = exports.zupaisAndKanjis = exports.kanjiForZupai = exports.digitForZupai = exports.numberToZupai = exports.allTiles = exports.zupais = exports.isShupai = exports.isZupai = exports.isAkadora = exports.isPinzu = exports.isSozu = exports.isManzu = exports.shupaiValue = exports.shupaiType = exports.shupais = exports.sozus = exports.pinzus = exports.manzus = void 0;
 const parse_1 = require("./parse");
 const manzuSet = new Set();
 const pinzuSet = new Set();
@@ -105,6 +105,12 @@ function zupaisAndKanjis() {
     return [...zupaiToKanji];
 }
 exports.zupaisAndKanjis = zupaisAndKanjis;
+function sameValue(pai1, pai2) {
+    return pai1 == pai2 || isShupai(pai1) && isShupai(pai2) &&
+        shupaiType(pai1) === shupaiType(pai2) &&
+        shupaiValue(pai1) === shupaiValue(pai2);
+}
+exports.sameValue = sameValue;
 function validate(tiles) {
     if (tiles.length == 0)
         return true;
@@ -112,10 +118,7 @@ function validate(tiles) {
     let previousTile = "invalid";
     let count = 0;
     for (const tile of sorted) {
-        if (tile == previousTile ||
-            isAkadora(previousTile) && isShupai(tile)
-                && shupaiType(previousTile) == shupaiType(tile)
-                && shupaiValue(tile) == 5) {
+        if (sameValue(tile, previousTile)) {
             count++;
             if (count > 4 || isAkadora(tile) && count > 1)
                 return false;

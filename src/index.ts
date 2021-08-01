@@ -1,13 +1,13 @@
 import { Pai, ShupaiType, isZupai, isShupai, shupaiType, shupaiValue,
          manzus, pinzus, sozus, shupais, zupais, allTiles, isManzu,
-         isSozu, isPinzu, isAkadora, validate } from "./pai";
+         isSozu, isPinzu, isAkadora, validate, sameValue } from "./pai";
 import { parse, parseSingle, stringify } from "./parse";
-import { shanten, sameTile, shantenRecurse } from "./shanten";
+import { shanten, shantenRecurse } from "./shanten";
 
 export {
   Pai, ShupaiType, isZupai, isShupai, shupaiType, shupaiValue,
   manzus, pinzus, sozus, shupais, zupais, allTiles, isManzu,
-  isSozu, isPinzu, isAkadora, validate,
+  isSozu, isPinzu, isAkadora, validate, sameValue,
   parse, parseSingle, stringify,
-  shanten, sameTile, shantenRecurse
+  shanten, shantenRecurse
 };

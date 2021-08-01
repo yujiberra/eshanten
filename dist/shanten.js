@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.shantenRecurse = exports.shanten = exports.fitsInSet = exports.formSet = exports.sameTile = exports.stringifyProgress = void 0;
+exports.shantenRecurse = exports.shanten = exports.fitsInSet = exports.formSet = exports.stringifyProgress = void 0;
 const pai_1 = require("./pai");
 const parse_1 = require("./parse");
 function stringifyProgress({ partialSets, remaining, useless }) {
@@ -10,14 +10,8 @@ function stringifyProgress({ partialSets, remaining, useless }) {
     return `Sets: ${sets.toString()} / Useless: ${uselessStr} ${remainingStr}/ Shanten = ${useless.length}`;
 }
 exports.stringifyProgress = stringifyProgress;
-function sameTile(pai1, pai2) {
-    return pai1 == pai2 || pai_1.isShupai(pai1) && pai_1.isShupai(pai2) &&
-        pai_1.shupaiType(pai1) === pai_1.shupaiType(pai2) &&
-        pai_1.shupaiValue(pai1) === pai_1.shupaiValue(pai2);
-}
-exports.sameTile = sameTile;
 function formSet(tile1, tile2) {
-    if (sameTile(tile1, tile2)) {
+    if (pai_1.sameValue(tile1, tile2)) {
         return { tiles: [tile1, tile2], type: "tuple" };
     }
     else if (pai_1.isShupai(tile1) && pai_1.isShupai(tile2) &&
@@ -35,7 +29,7 @@ function fitsInSet(tile, partialSet) {
         return false;
     }
     else if (partialSet.type === "tuple") {
-        return sameTile(tile, partialSet.tiles[0]);
+        return pai_1.sameValue(tile, partialSet.tiles[0]);
     }
     else {
         if (pai_1.isShupai(tile) && pai_1.shupaiType(tile) === pai_1.shupaiType(partialSet.tiles[0])) {
@@ -93,7 +87,7 @@ function shantenRecurse(progress) {
     // try making a new set. only make a run if tuple doesn't exist, to prevent
     // duplication.
     if ((progress.partialSets.length < 5) &&
-        (progress.partialSets.filter(set => set.type == "tuple" && sameTile(tile, set.tiles[0])).length == 0)) {
+        (progress.partialSets.filter(set => set.type == "tuple" && pai_1.sameValue(tile, set.tiles[0])).length == 0)) {
         if (pai_1.isShupai(tile)) {
             if (roomForMoreRunsAndTriples) {
                 candidates.push({
@@ -112,7 +106,7 @@ function shantenRecurse(progress) {
     // if tile can't combine with anything, give up on using it
     if (!tileHasAFriend) {
         const index = progress.remaining.indexOf(tile);
-        const matches = progress.remaining.filter(t => sameTile(t, tile));
+        const matches = progress.remaining.filter(t => pai_1.sameValue(t, tile));
         const newRemaining = [...progress.remaining];
         newRemaining.splice(index, matches.length);
         candidates.push({

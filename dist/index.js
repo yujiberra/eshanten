@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.shantenRecurse = exports.sameTile = exports.shanten = exports.stringify = exports.parseSingle = exports.parse = exports.validate = exports.isAkadora = exports.isPinzu = exports.isSozu = exports.isManzu = exports.allTiles = exports.zupais = exports.shupais = exports.sozus = exports.pinzus = exports.manzus = exports.shupaiValue = exports.shupaiType = exports.isShupai = exports.isZupai = void 0;
+exports.shantenRecurse = exports.shanten = exports.stringify = exports.parseSingle = exports.parse = exports.sameValue = exports.validate = exports.isAkadora = exports.isPinzu = exports.isSozu = exports.isManzu = exports.allTiles = exports.zupais = exports.shupais = exports.sozus = exports.pinzus = exports.manzus = exports.shupaiValue = exports.shupaiType = exports.isShupai = exports.isZupai = void 0;
 const pai_1 = require("./pai");
 Object.defineProperty(exports, "isZupai", { enumerable: true, get: function () { return pai_1.isZupai; } });
 Object.defineProperty(exports, "isShupai", { enumerable: true, get: function () { return pai_1.isShupai; } });
@@ -17,11 +17,11 @@ Object.defineProperty(exports, "isSozu", { enumerable: true, get: function () { 
 Object.defineProperty(exports, "isPinzu", { enumerable: true, get: function () { return pai_1.isPinzu; } });
 Object.defineProperty(exports, "isAkadora", { enumerable: true, get: function () { return pai_1.isAkadora; } });
 Object.defineProperty(exports, "validate", { enumerable: true, get: function () { return pai_1.validate; } });
+Object.defineProperty(exports, "sameValue", { enumerable: true, get: function () { return pai_1.sameValue; } });
 const parse_1 = require("./parse");
 Object.defineProperty(exports, "parse", { enumerable: true, get: function () { return parse_1.parse; } });
 Object.defineProperty(exports, "parseSingle", { enumerable: true, get: function () { return parse_1.parseSingle; } });
 Object.defineProperty(exports, "stringify", { enumerable: true, get: function () { return parse_1.stringify; } });
 const shanten_1 = require("./shanten");
 Object.defineProperty(exports, "shanten", { enumerable: true, get: function () { return shanten_1.shanten; } });
-Object.defineProperty(exports, "sameTile", { enumerable: true, get: function () { return shanten_1.sameTile; } });
 Object.defineProperty(exports, "shantenRecurse", { enumerable: true, get: function () { return shanten_1.shantenRecurse; } });
