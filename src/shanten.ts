@@ -89,7 +89,8 @@ export function riipai(input: ShantenProgress | Pai[]): ShantenProgress[] {
     // to prevent double-counting (since 12m + 3m happens earlier)
     if (fitsInSet(tile, partialSet) &&
         ((partialSet.type == 'tuple' && ((partialSet.tiles.length == 1)  || roomForMoreRunsAndTriples)) ||
-          (isShupai(partialSet.tiles[0]) && Math.max(...partialSet.tiles.map(t => shupaiValue(t))) < shupaiValue(tile)))) {
+          (isShupai(partialSet.tiles[0]) && Math.max(...partialSet.tiles.map(t => shupaiValue(t))) < shupaiValue(tile)
+           && progress.partialSets.filter(p => p.type == "tuple").map(p => p.tiles).reduce((a, b) => a.concat(b), []).filter(x => sameValue(x, tile)).length == 0))) {
       tileHasAFriend = true;
       const newPartialSet = {
         tiles: partialSet.tiles.concat([tile]),

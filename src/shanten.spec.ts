@@ -61,9 +61,14 @@ describe("fitsInSet", function() {
   });
 });
 
-describe("shantenRecurse", function() {
+describe("riipai", function() {
   it ("should correctly identify multiple interpretations of 3menchan", function() {
     expect(riipai({partialSets: [], remaining: parse("12345m4r56p789s77z"),
+      useless: []}).length).toBe(2);
+  });
+
+  it ("should correctly identify two interpretations of 7899m", function() {
+    expect(riipai({partialSets: [], remaining: parse("7899m111222333z"),
       useless: []}).length).toBe(2);
   });
 });

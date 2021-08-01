@@ -57,9 +57,13 @@ describe("fitsInSet", function () {
         expect(shanten_1.fitsInSet("3m", run)).toBeTrue();
     });
 });
-describe("shantenRecurse", function () {
+describe("riipai", function () {
     it("should correctly identify multiple interpretations of 3menchan", function () {
         expect(shanten_1.riipai({ partialSets: [], remaining: parse_1.parse("12345m4r56p789s77z"),
+            useless: [] }).length).toBe(2);
+    });
+    it("should correctly identify two interpretations of 7899m", function () {
+        expect(shanten_1.riipai({ partialSets: [], remaining: parse_1.parse("7899m111222333z"),
             useless: [] }).length).toBe(2);
     });
 });

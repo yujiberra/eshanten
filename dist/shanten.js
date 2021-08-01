@@ -75,7 +75,8 @@ function riipai(input) {
         // to prevent double-counting (since 12m + 3m happens earlier)
         if (fitsInSet(tile, partialSet) &&
             ((partialSet.type == 'tuple' && ((partialSet.tiles.length == 1) || roomForMoreRunsAndTriples)) ||
-                (pai_1.isShupai(partialSet.tiles[0]) && Math.max(...partialSet.tiles.map(t => pai_1.shupaiValue(t))) < pai_1.shupaiValue(tile)))) {
+                (pai_1.isShupai(partialSet.tiles[0]) && Math.max(...partialSet.tiles.map(t => pai_1.shupaiValue(t))) < pai_1.shupaiValue(tile)
+                    && progress.partialSets.filter(p => p.type == "tuple").map(p => p.tiles).reduce((a, b) => a.concat(b), []).filter(x => pai_1.sameValue(x, tile)).length == 0))) {
             tileHasAFriend = true;
             const newPartialSet = {
                 tiles: partialSet.tiles.concat([tile]),
