@@ -1,5 +1,5 @@
 import { parse } from "./parse";
-import { fitsInSet, PartialSet, shanten, shantenRecurse } from "./shanten"
+import { fitsInSet, PartialSet, shanten, riipai } from "./shanten"
 
 describe("fitsInSet", function() {
   it ("should correctly identify what fits into a singleton tuple", function() {
@@ -63,7 +63,7 @@ describe("fitsInSet", function() {
 
 describe("shantenRecurse", function() {
   it ("should correctly identify multiple interpretations of 3menchan", function() {
-    expect(shantenRecurse({partialSets: [], remaining: parse("12345m4r56p789s77z"),
+    expect(riipai({partialSets: [], remaining: parse("12345m4r56p789s77z"),
       useless: []}).length).toBe(2);
   });
 });

@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.shantenRecurse = exports.shanten = exports.fitsInSet = exports.formSet = exports.stringifyProgress = void 0;
+exports.riipai = exports.shanten = exports.fitsInSet = exports.formSet = exports.stringifyProgress = void 0;
 const pai_1 = require("./pai");
 const parse_1 = require("./parse");
 function stringifyProgress({ partialSets, remaining, useless }) {
@@ -45,9 +45,7 @@ function fitsInSet(tile, partialSet) {
 }
 exports.fitsInSet = fitsInSet;
 function shanten(tiles) {
-    const results = shantenRecurse({ partialSets: [], remaining: tiles,
-        useless: [] });
-    return results[0].useless.length;
+    return riipai(tiles)[0].useless.length;
 }
 exports.shanten = shanten;
 function removeAndCopy(array, ...elements) {
@@ -55,7 +53,14 @@ function removeAndCopy(array, ...elements) {
     elements.forEach(element => copiedArray.splice(copiedArray.indexOf(element), 1));
     return copiedArray;
 }
-function shantenRecurse(progress) {
+function riipai(input) {
+    const progress = Array.isArray(input) ?
+        {
+            partialSets: [],
+            remaining: input,
+            useless: []
+        } :
+        input;
     // base case
     if (progress.remaining.length === 0) {
         return [progress];
@@ -115,9 +120,9 @@ function shantenRecurse(progress) {
             useless: progress.useless.concat(matches),
         });
     }
-    const results = candidates.map(progress => shantenRecurse(progress));
+    const results = candidates.map(progress => riipai(progress));
     const flattened = results[0].concat(...results.slice(1));
     const minimum = Math.min(...flattened.map(progress => progress.useless.length));
     return flattened.filter(prog => prog.useless.length === minimum);
 }
-exports.shantenRecurse = shantenRecurse;
+exports.riipai = riipai;

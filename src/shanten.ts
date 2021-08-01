@@ -52,9 +52,7 @@ export function fitsInSet(tile: Pai, partialSet: PartialSet): boolean {
 }
 
 export function shanten(tiles: Pai[]): number {
-  const results = shantenRecurse({partialSets: [], remaining: tiles,
-    useless: []});
-  return results[0].useless.length
+  return riipai(tiles)[0].useless.length
 }
 
 function removeAndCopy<T>(array: T[], ...elements: T[]): T[] {
@@ -64,7 +62,16 @@ function removeAndCopy<T>(array: T[], ...elements: T[]): T[] {
   return copiedArray;
 }
 
-export function shantenRecurse(progress: ShantenProgress): ShantenProgress[] {
+export function riipai(input: ShantenProgress | Pai[]): ShantenProgress[] {
+  const progress = Array.isArray(input) ?
+    {
+      partialSets: [],
+      remaining: input,
+      useless: []
+    } :
+    input as ShantenProgress;
+
+
   // base case
   if (progress.remaining.length === 0) {
     return [progress];
@@ -131,7 +138,7 @@ export function shantenRecurse(progress: ShantenProgress): ShantenProgress[] {
     })
   }
 
-  const results = candidates.map(progress => shantenRecurse(progress));
+  const results = candidates.map(progress => riipai(progress));
   const flattened = results[0].concat(...results.slice(1));
   const minimum = Math.min(...flattened.map(progress => progress.useless.length));
   return flattened.filter(prog => prog.useless.length === minimum);
