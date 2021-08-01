@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.stringify = exports.stringifySingle = exports.parse = exports.parseSingle = exports.compare = exports.rank = void 0;
+exports.stringify = exports.stringifySingle = exports.parse = exports.parseOne = exports.compare = exports.rank = void 0;
 const pai_1 = require("./pai");
 function rank(pai) {
     if (pai_1.isShupai(pai)) {
@@ -29,10 +29,10 @@ function compare(pai1, pai2) {
     return rank(pai1) - rank(pai2);
 }
 exports.compare = compare;
-function parseSingle(input) {
+function parseOne(input) {
     return parse(input)[0];
 }
-exports.parseSingle = parseSingle;
+exports.parseOne = parseOne;
 function parse(input) {
     var _a;
     const pais = [];

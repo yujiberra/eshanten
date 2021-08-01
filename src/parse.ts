@@ -30,7 +30,7 @@ export function compare(pai1: Pai, pai2: Pai): number {
   return rank(pai1) - rank(pai2);
 }
 
-export function parseSingle(input: string): Pai {
+export function parseOne(input: string): Pai {
   return parse(input)[0];
 }
 

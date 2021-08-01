@@ -1,5 +1,5 @@
 import { validate, sameValue } from "./pai"
-import { parse, parseSingle as parseOne } from "./parse"
+import { parse, parseOne } from "./parse"
 
 describe("sameValue", function() {
   it("should identify identical zupai", function() {

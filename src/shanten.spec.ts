@@ -1,4 +1,4 @@
-import { parse, parseSingle as parseOne } from "./parse";
+import { parse, parseOne } from "./parse";
 import { fitsInSet, PartialSet, shanten, shantenRecurse } from "./shanten"
 
 describe("fitsInSet", function() {
