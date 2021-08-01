@@ -70,7 +70,7 @@ function riipai(input) {
     const tile = progress.remaining[0];
     let tileHasAFriend = false;
     const candidates = [];
-    progress.partialSets.forEach(partialSet => {
+    progress.partialSets.forEach((partialSet, index) => {
         // The complex check below is to disallow e.g. adding 2m to 13m,
         // to prevent double-counting (since 12m + 3m happens earlier)
         if (fitsInSet(tile, partialSet) &&
@@ -81,9 +81,10 @@ function riipai(input) {
                 tiles: partialSet.tiles.concat([tile]),
                 type: partialSet.type
             };
+            const newPartialSets = [...progress.partialSets];
+            newPartialSets[index] = newPartialSet;
             candidates.push({
-                partialSets: removeAndCopy(progress.partialSets, partialSet)
-                    .concat([newPartialSet]),
+                partialSets: newPartialSets,
                 remaining: removeAndCopy(progress.remaining, tile),
                 useless: [...progress.useless],
             });
