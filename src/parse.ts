@@ -30,10 +30,6 @@ export function compare(pai1: Pai, pai2: Pai): number {
   return rank(pai1) - rank(pai2);
 }
 
-export function parseOne(input: string): Pai {
-  return parse(input)[0];
-}
-
 export function parse(input: string): Pai[] {
   const pais: Pai[] = [];
 
