@@ -1,63 +1,63 @@
-import { parse, parseOne } from "./parse";
+import { parse } from "./parse";
 import { fitsInSet, PartialSet, shanten, shantenRecurse } from "./shanten"
 
 describe("fitsInSet", function() {
   it ("should correctly identify what fits into a singleton tuple", function() {
     const nanPair: PartialSet = {tiles:parse("2z"), type:"tuple"};
-    expect(fitsInSet(parseOne("1z"), nanPair)).toBeFalse();
-    expect(fitsInSet(parseOne("5p"), nanPair)).toBeFalse();
-    expect(fitsInSet(parseOne("2z"), nanPair)).toBeTrue();
+    expect(fitsInSet("1z", nanPair)).toBeFalse();
+    expect(fitsInSet("5p", nanPair)).toBeFalse();
+    expect(fitsInSet("2z", nanPair)).toBeTrue();
     const akaPair: PartialSet = {tiles:parse("r5m"), type:"tuple"};
-    expect(fitsInSet(parseOne("1z"), akaPair)).toBeFalse();
-    expect(fitsInSet(parseOne("5p"), akaPair)).toBeFalse();
-    expect(fitsInSet(parseOne("4m"), akaPair)).toBeFalse();
-    expect(fitsInSet(parseOne("5m"), akaPair)).toBeTrue();
+    expect(fitsInSet("1z", akaPair)).toBeFalse();
+    expect(fitsInSet("5p", akaPair)).toBeFalse();
+    expect(fitsInSet("4m", akaPair)).toBeFalse();
+    expect(fitsInSet("5m", akaPair)).toBeTrue();
   });
 
   it ("should correctly identify what fits into a pair", function() {
     const nanPair: PartialSet = {tiles:parse("22z"), type:"tuple"};
-    expect(fitsInSet(parseOne("1z"), nanPair)).toBeFalse();
-    expect(fitsInSet(parseOne("5p"), nanPair)).toBeFalse();
-    expect(fitsInSet(parseOne("2z"), nanPair)).toBeTrue();
+    expect(fitsInSet("1z", nanPair)).toBeFalse();
+    expect(fitsInSet("5p", nanPair)).toBeFalse();
+    expect(fitsInSet("2z", nanPair)).toBeTrue();
     const akaPair: PartialSet = {tiles:parse("r55m"), type:"tuple"};
-    expect(fitsInSet(parseOne("1z"), akaPair)).toBeFalse();
-    expect(fitsInSet(parseOne("5p"), akaPair)).toBeFalse();
-    expect(fitsInSet(parseOne("4m"), akaPair)).toBeFalse();
-    expect(fitsInSet(parseOne("5m"), akaPair)).toBeTrue();
+    expect(fitsInSet("1z", akaPair)).toBeFalse();
+    expect(fitsInSet("5p", akaPair)).toBeFalse();
+    expect(fitsInSet("4m", akaPair)).toBeFalse();
+    expect(fitsInSet("5m", akaPair)).toBeTrue();
   });
 
   it ("should correctly identify what fits into a singleton run", function() {
     const run: PartialSet = {tiles:parse("2m"), type:"run"};
-    expect(fitsInSet(parseOne("1z"), run)).toBeFalse();
-    expect(fitsInSet(parseOne("r5m"), run)).toBeFalse();
-    expect(fitsInSet(parseOne("1s"), run)).toBeFalse();
-    expect(fitsInSet(parseOne("4p"), run)).toBeFalse();
-    expect(fitsInSet(parseOne("1m"), run)).toBeTrue();
-    expect(fitsInSet(parseOne("3m"), run)).toBeTrue();
-    expect(fitsInSet(parseOne("4m"), run)).toBeTrue();
+    expect(fitsInSet("1z", run)).toBeFalse();
+    expect(fitsInSet("0m", run)).toBeFalse();
+    expect(fitsInSet("1s", run)).toBeFalse();
+    expect(fitsInSet("4p", run)).toBeFalse();
+    expect(fitsInSet("1m", run)).toBeTrue();
+    expect(fitsInSet("3m", run)).toBeTrue();
+    expect(fitsInSet("4m", run)).toBeTrue();
   });
 
   it ("should correctly identify what fits into a ryanmen", function() {
     const run: PartialSet = {tiles:parse("23m"), type:"run"};
-    expect(fitsInSet(parseOne("1z"), run)).toBeFalse();
-    expect(fitsInSet(parseOne("r5m"), run)).toBeFalse();
-    expect(fitsInSet(parseOne("1s"), run)).toBeFalse();
-    expect(fitsInSet(parseOne("4p"), run)).toBeFalse();
-    expect(fitsInSet(parseOne("2m"), run)).toBeFalse();
-    expect(fitsInSet(parseOne("3m"), run)).toBeFalse();
-    expect(fitsInSet(parseOne("1m"), run)).toBeTrue();
-    expect(fitsInSet(parseOne("4m"), run)).toBeTrue();
+    expect(fitsInSet("1z", run)).toBeFalse();
+    expect(fitsInSet("0m", run)).toBeFalse();
+    expect(fitsInSet("1s", run)).toBeFalse();
+    expect(fitsInSet("4p", run)).toBeFalse();
+    expect(fitsInSet("2m", run)).toBeFalse();
+    expect(fitsInSet("3m", run)).toBeFalse();
+    expect(fitsInSet("1m", run)).toBeTrue();
+    expect(fitsInSet("4m", run)).toBeTrue();
   });
 
   it ("should correctly identify what fits into a kanchan", function() {
     const run: PartialSet = {tiles:parse("24m"), type:"run"};
-    expect(fitsInSet(parseOne("1z"), run)).toBeFalse();
-    expect(fitsInSet(parseOne("r5m"), run)).toBeFalse();
-    expect(fitsInSet(parseOne("1m"), run)).toBeFalse();
-    expect(fitsInSet(parseOne("3s"), run)).toBeFalse();
-    expect(fitsInSet(parseOne("2m"), run)).toBeFalse();
-    expect(fitsInSet(parseOne("4m"), run)).toBeFalse();
-    expect(fitsInSet(parseOne("3m"), run)).toBeTrue();
+    expect(fitsInSet("1z", run)).toBeFalse();
+    expect(fitsInSet("0m", run)).toBeFalse();
+    expect(fitsInSet("1m", run)).toBeFalse();
+    expect(fitsInSet("3s", run)).toBeFalse();
+    expect(fitsInSet("2m", run)).toBeFalse();
+    expect(fitsInSet("4m", run)).toBeFalse();
+    expect(fitsInSet("3m", run)).toBeTrue();
   });
 });
 

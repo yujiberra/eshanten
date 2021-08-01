@@ -4,28 +4,28 @@ const pai_1 = require("./pai");
 const parse_1 = require("./parse");
 describe("sameValue", function () {
     it("should identify identical zupai", function () {
-        expect(pai_1.sameValue(parse_1.parseOne("3z"), parse_1.parseOne("3z"))).toBeTrue();
-        expect(pai_1.sameValue(parse_1.parseOne("5z"), parse_1.parseOne("5z"))).toBeTrue();
+        expect(pai_1.sameValue("3z", "3z")).toBeTrue();
+        expect(pai_1.sameValue("5z", "5z")).toBeTrue();
     });
     it("should distinguish distinct zupai", function () {
-        expect(pai_1.sameValue(parse_1.parseOne("3z"), parse_1.parseOne("1z"))).toBeFalse();
-        expect(pai_1.sameValue(parse_1.parseOne("5z"), parse_1.parseOne("6z"))).toBeFalse();
+        expect(pai_1.sameValue("3z", "1z")).toBeFalse();
+        expect(pai_1.sameValue("5z", "6z")).toBeFalse();
     });
     it("should distinguish zupai and shupai", function () {
-        expect(pai_1.sameValue(parse_1.parseOne("7z"), parse_1.parseOne("3m"))).toBeFalse();
-        expect(pai_1.sameValue(parse_1.parseOne("r5p"), parse_1.parseOne("7z"))).toBeFalse();
+        expect(pai_1.sameValue("7z", "3m")).toBeFalse();
+        expect(pai_1.sameValue("0p", "7z")).toBeFalse();
     });
     it("should distinguish same-number Shupai from different suits", function () {
-        expect(pai_1.sameValue(parse_1.parseOne("3m"), parse_1.parseOne("3p"))).toBeFalse();
+        expect(pai_1.sameValue("3m", "3p")).toBeFalse();
     });
     it("should distinguish different-number Shupai from the same suit", function () {
-        expect(pai_1.sameValue(parse_1.parseOne("4p"), parse_1.parseOne("3p"))).toBeFalse();
+        expect(pai_1.sameValue("4p", "3p")).toBeFalse();
     });
     it("should identify same-number Shupai from the same suit", function () {
-        expect(pai_1.sameValue(parse_1.parseOne("4p"), parse_1.parseOne("4p"))).toBeTrue();
+        expect(pai_1.sameValue("4p", "4p")).toBeTrue();
     });
     it("should identify same-number Shupai from the same suit, even if one is dora", function () {
-        expect(pai_1.sameValue(parse_1.parseOne("r5p"), parse_1.parseOne("5p"))).toBeTrue();
+        expect(pai_1.sameValue("0p", "5p")).toBeTrue();
     });
 });
 describe("validate", function () {
