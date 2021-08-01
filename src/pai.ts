@@ -23,7 +23,7 @@ export const shupais = (): string[] => [...shupaiSet];
       shupaiSet.add(tile);
       shupaiValues.set(tile, i);
     }
-    const akaDora = `r5${char}`
+    const akaDora = `0${char}`
     set.add(akaDora);
     shupaiSet.add(akaDora);
     akaDoraSet.add(akaDora);

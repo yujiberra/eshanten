@@ -18,7 +18,7 @@ describe("validate", function() {
     expect(validate(parse("r55555m"))).toBe(false);
   });
 
-  it("should invalidate ['r5m', 'r5m']", function() {
-    expect(validate(['r5m', 'r5m'])).toBe(false);
+  it("should invalidate ['0m', '0m']", function() {
+    expect(validate(['0m', '0m'])).toBe(false);
   })
 });

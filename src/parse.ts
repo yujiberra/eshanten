@@ -76,7 +76,7 @@ export function parse(input: string): Pai[] {
 
     // extract akadora
     if (colorString.match("r5")) {
-      pais.push(`r5${shupaiType}`);
+      pais.push(`0${shupaiType}`);
       colorString = colorString.replace(/r5/g,"");
     }
 

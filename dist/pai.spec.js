@@ -15,7 +15,7 @@ describe("validate", function () {
     it("should invalidate r55555m", function () {
         expect(pai_1.validate(parse_1.parse("r55555m"))).toBe(false);
     });
-    it("should invalidate ['r5m', 'r5m']", function () {
-        expect(pai_1.validate(['r5m', 'r5m'])).toBe(false);
+    it("should invalidate ['0m', '0m']", function () {
+        expect(pai_1.validate(['0m', '0m'])).toBe(false);
     });
 });

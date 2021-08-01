@@ -22,6 +22,9 @@ describe("parse/stringify", function () {
         const input = "7654321z";
         expect(parse_1.stringify(parse_1.parse(input))).toEqual("東南西北白発中");
     });
+    it("should correctly parse akadora represented as 0", function () {
+        expect(parse_1.stringify(parse_1.parse("111055666789s"))).toEqual("111r555666789s");
+    });
     it("should correctly parse combined input", function () {
         const input = "123m4r56p789s東東白白白";
         expect(parse_1.stringify(parse_1.parse(input))).toEqual(input);
