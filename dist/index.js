@@ -26,3 +26,4 @@ Object.defineProperty(exports, "shanten", { enumerable: true, get: function () {
 Object.defineProperty(exports, "riipai", { enumerable: true, get: function () { return shanten_1.riipai; } });
 Object.defineProperty(exports, "stringifyRiipai", { enumerable: true, get: function () { return shanten_1.stringifyRiipai; } });
 Object.defineProperty(exports, "ukeire", { enumerable: true, get: function () { return shanten_1.ukeire; } });
+//# sourceMappingURL=index.js.map

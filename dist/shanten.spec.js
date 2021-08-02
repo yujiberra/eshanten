@@ -143,3 +143,4 @@ describe("ukeire", function () {
         expect(shanten_1.ukeire(parse_1.parse("1112345678999m"))).toEqual(parse_1.parse("123456789m"));
     });
 });
+//# sourceMappingURL=shanten.spec.js.map

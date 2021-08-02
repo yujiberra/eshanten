@@ -45,3 +45,4 @@ describe("validate", function () {
         expect(pai_1.validate(['0m', '0m'])).toBe(false);
     });
 });
+//# sourceMappingURL=pai.spec.js.map

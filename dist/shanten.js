@@ -234,3 +234,4 @@ function ukeire(input) {
     return [...new Set(results.reduce((acc, val) => acc.concat(val), []))].sort(parse_1.compare);
 }
 exports.ukeire = ukeire;
+//# sourceMappingURL=shanten.js.map

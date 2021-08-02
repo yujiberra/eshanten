@@ -151,3 +151,4 @@ function validate(tiles) {
     return true;
 }
 exports.validate = validate;
+//# sourceMappingURL=pai.js.map
