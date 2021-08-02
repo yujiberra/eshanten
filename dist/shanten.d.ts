@@ -4,13 +4,13 @@ export interface PartialSet {
     type: SetType;
 }
 export declare type SetType = "run" | "tuple";
-export interface ShantenProgress {
+export declare type Riipai = {
     partialSets: PartialSet[];
-    remaining: Pai[];
     useless: Pai[];
-}
-export declare function stringifyProgress({ partialSets, remaining, useless }: ShantenProgress): string;
+};
+export declare type RiipaiProgress = [Riipai, Pai[]];
+export declare function stringifyProgress([{ partialSets, useless }, remaining]: [Riipai, Pai[]]): string;
 export declare function formSet(tile1: Pai, tile2: Pai): PartialSet | null;
 export declare function fitsInSet(tile: Pai, partialSet: PartialSet): boolean;
 export declare function shanten(tiles: Pai[]): number;
-export declare function riipai(input: ShantenProgress | Pai[]): ShantenProgress[];
+export declare function riipai(input: RiipaiProgress | Pai[]): Riipai[];

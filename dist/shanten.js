@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.riipai = exports.shanten = exports.fitsInSet = exports.formSet = exports.stringifyProgress = void 0;
 const pai_1 = require("./pai");
 const parse_1 = require("./parse");
-function stringifyProgress({ partialSets, remaining, useless }) {
+function stringifyProgress([{ partialSets, useless }, remaining]) {
     const sets = partialSets.map(s => parse_1.stringify(s.tiles));
     const remainingStr = remaining.length > 0 ? `/ Remaining: ${parse_1.stringify(remaining)} ` : '';
     const uselessStr = parse_1.stringify(useless);
@@ -54,73 +54,69 @@ function removeAndCopy(array, ...elements) {
     return copiedArray;
 }
 function riipai(input) {
-    const progress = Array.isArray(input) ?
-        {
-            partialSets: [],
-            remaining: input,
-            useless: []
-        } :
-        input;
+    const progress = (typeof (input[0]) == 'string' ?
+        [{
+                partialSets: [],
+                useless: []
+            }, input] :
+        input);
+    const [{ partialSets, useless }, remaining] = progress;
     // base case
-    if (progress.remaining.length === 0) {
-        return [progress];
+    if (remaining.length === 0) {
+        return [{ partialSets, useless }];
     }
-    const roomForMoreRunsAndTriples = progress.partialSets.filter(set => (set.type == "run" || set.tiles.length == 3)).length < 4;
+    const roomForMoreRunsAndTriples = partialSets.filter(set => (set.type == "run" || set.tiles.length == 3)).length < 4;
     // try adding first tile to existing sets
-    const tile = progress.remaining[0];
+    const tile = remaining[0];
     let tileHasAFriend = false;
     const candidates = [];
-    progress.partialSets.forEach((partialSet, index) => {
+    partialSets.forEach((partialSet, index) => {
         // The complex check below is to disallow e.g. adding 2m to 13m,
         // to prevent double-counting (since 12m + 3m happens earlier)
         if (fitsInSet(tile, partialSet) &&
             ((partialSet.type == 'tuple' && ((partialSet.tiles.length == 1) || roomForMoreRunsAndTriples)) ||
                 (pai_1.isShupai(partialSet.tiles[0]) && Math.max(...partialSet.tiles.map(t => pai_1.shupaiValue(t))) < pai_1.shupaiValue(tile)
-                    && progress.partialSets.filter(p => p.type == "tuple").map(p => p.tiles).reduce((a, b) => a.concat(b), []).filter(x => pai_1.sameValue(x, tile)).length == 0))) {
+                    && partialSets.filter(p => p.type == "tuple").map(p => p.tiles).reduce((a, b) => a.concat(b), []).filter(x => pai_1.sameValue(x, tile)).length == 0))) {
             tileHasAFriend = true;
             const newPartialSet = {
                 tiles: partialSet.tiles.concat([tile]),
                 type: partialSet.type
             };
-            const newPartialSets = [...progress.partialSets];
+            const newPartialSets = [...partialSets];
             newPartialSets[index] = newPartialSet;
-            candidates.push({
-                partialSets: newPartialSets,
-                remaining: removeAndCopy(progress.remaining, tile),
-                useless: [...progress.useless],
-            });
+            candidates.push([{
+                    partialSets: newPartialSets,
+                    useless: [...useless],
+                }, removeAndCopy(remaining, tile)]);
         }
     });
     // try making a new set. only make a run if tuple doesn't exist, to prevent
     // duplication.
-    if ((progress.partialSets.length < 5) &&
-        (progress.partialSets.filter(set => set.type == "tuple" && pai_1.sameValue(tile, set.tiles[0])).length == 0)) {
+    if ((partialSets.length < 5) &&
+        (partialSets.filter(set => set.type == "tuple" && pai_1.sameValue(tile, set.tiles[0])).length == 0)) {
         if (pai_1.isShupai(tile)) {
             if (roomForMoreRunsAndTriples) {
-                candidates.push({
-                    partialSets: progress.partialSets.concat([{ tiles: [tile], type: "run" }]),
-                    remaining: removeAndCopy(progress.remaining, tile),
-                    useless: [...progress.useless],
-                });
+                candidates.push([{
+                        partialSets: partialSets.concat([{ tiles: [tile], type: "run" }]),
+                        useless: [...useless],
+                    }, removeAndCopy(remaining, tile)]);
             }
         }
-        candidates.push({
-            partialSets: progress.partialSets.concat([{ tiles: [tile], type: "tuple" }]),
-            remaining: removeAndCopy(progress.remaining, tile),
-            useless: [...progress.useless],
-        });
+        candidates.push([{
+                partialSets: partialSets.concat([{ tiles: [tile], type: "tuple" }]),
+                useless: [...useless],
+            }, removeAndCopy(remaining, tile)]);
     }
     // if tile can't combine with anything, give up on using it
     if (!tileHasAFriend) {
-        const index = progress.remaining.indexOf(tile);
-        const matches = progress.remaining.filter(t => pai_1.sameValue(t, tile));
-        const newRemaining = [...progress.remaining];
+        const index = remaining.indexOf(tile);
+        const matches = remaining.filter(t => pai_1.sameValue(t, tile));
+        const newRemaining = [...remaining];
         newRemaining.splice(index, matches.length);
-        candidates.push({
-            partialSets: [...progress.partialSets],
-            remaining: newRemaining,
-            useless: progress.useless.concat(matches),
-        });
+        candidates.push([{
+                partialSets: [...partialSets],
+                useless: useless.concat(matches),
+            }, newRemaining]);
     }
     const results = candidates.map(progress => riipai(progress));
     const flattened = results[0].concat(...results.slice(1));
