@@ -1,6 +1,7 @@
 import { isShupai, Pai, shupaiType, shupaiValue, sameValue, nonAkadoraCopy,
-         shupai } from "./pai";
-import { stringify } from "./parse";
+         shupai,
+         validate} from "./pai";
+import { compare, stringify } from "./parse";
 
 export interface PartialSet {
   tiles: Pai[],
@@ -199,4 +200,58 @@ export function partialSetUkeire(partialSet: PartialSet, isPair = false): Pai[][
     }
   }
   return [[]]; // shouldn't ever get here
+}
+
+export function generatePossibilities(possibilities: Pai[][][], index = 0): Pai[][] {
+  if (index >= possibilities.length) {
+    return [[]];
+  } else {
+    const result: string[][] = [];
+    const simplerCase = generatePossibilities(possibilities, index + 1);
+
+    possibilities[index].forEach(small => simplerCase.forEach(large => result.push(small.concat(large))));
+    return result;
+  }
+}
+
+export function ukeireSingle(sets: PartialSet[]): Pai[] | undefined {
+  const possiblePairIndices: number[] = [];
+  sets.forEach((set, index) => {
+    if (set.type === "tuple" && set.tiles.length <= 2) {
+      possiblePairIndices.push(index);
+    }
+  });
+
+  const setUkeires = sets.map(s => partialSetUkeire(s));
+
+  // Pai[] = possible completion of a partial set, e.g. "23m" => ["1m"]  - 0 ~ 2 elements
+  // Pai[][] = all possible completions of a partial set, e.g. "23m" => [["1m"], ["4m"]] - 1 ~ 3 elements
+  // Pai[][][] = all possible completions for all 5 partial sets  - 5 elements
+  // Pai[][][][] for each possible choice of pair, a layer 3 object
+
+  const pairConfigurations = possiblePairIndices.map(index => {
+    const ukeires = [...setUkeires];
+    ukeires[index] = partialSetUkeire(sets[index], true);
+    //console.log.log(ukeires);
+    return ukeires;
+  });
+
+  const potentialCompletions = pairConfigurations.map(configuration => generatePossibilities(configuration))
+    .reduce((acc, val) => acc.concat(val), []);
+
+  const allTiles = sets.map(set => set.tiles).reduce((acc, val) => acc.concat(val), []);
+
+  const possibleCompletions = potentialCompletions.filter(newTiles => validate(allTiles.concat(newTiles)));
+
+  if (possibleCompletions.length === 0) {
+    return undefined;
+  } else {
+    return [...new Set(possibleCompletions.reduce((acc, val) => acc.concat(val), []))];
+  }
+}
+
+export function ukeire(input: Riipai[] | Pai[]): Pai[] {
+  const riipais = typeof(input[0]) === "string" ? riipai(input as Pai[]): input as Riipai[];
+  const results = riipais.map(riipai => ukeireSingle(riipai.partialSets) || []);
+  return [...new Set(results.reduce((acc, val) => acc.concat(val), []))].sort(compare);
 }

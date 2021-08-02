@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.partialSetUkeire = exports.riipai = exports.shanten = exports.fitsInSet = exports.formSet = exports.stringifyProgress = void 0;
+exports.ukeire = exports.ukeireSingle = exports.generatePossibilities = exports.partialSetUkeire = exports.riipai = exports.shanten = exports.fitsInSet = exports.formSet = exports.stringifyProgress = void 0;
 const pai_1 = require("./pai");
 const parse_1 = require("./parse");
 function stringifyProgress([{ partialSets, useless }, remaining]) {
@@ -184,3 +184,51 @@ function partialSetUkeire(partialSet, isPair = false) {
     return [[]]; // shouldn't ever get here
 }
 exports.partialSetUkeire = partialSetUkeire;
+function generatePossibilities(possibilities, index = 0) {
+    if (index >= possibilities.length) {
+        return [[]];
+    }
+    else {
+        const result = [];
+        const simplerCase = generatePossibilities(possibilities, index + 1);
+        possibilities[index].forEach(small => simplerCase.forEach(large => result.push(small.concat(large))));
+        return result;
+    }
+}
+exports.generatePossibilities = generatePossibilities;
+function ukeireSingle(sets) {
+    const possiblePairIndices = [];
+    sets.forEach((set, index) => {
+        if (set.type === "tuple" && set.tiles.length <= 2) {
+            possiblePairIndices.push(index);
+        }
+    });
+    const setUkeires = sets.map(s => partialSetUkeire(s));
+    // Pai[] = possible completion of a partial set, e.g. "23m" => ["1m"]  - 0 ~ 2 elements
+    // Pai[][] = all possible completions of a partial set, e.g. "23m" => [["1m"], ["4m"]] - 1 ~ 3 elements
+    // Pai[][][] = all possible completions for all 5 partial sets  - 5 elements
+    // Pai[][][][] for each possible choice of pair, a layer 3 object
+    const pairConfigurations = possiblePairIndices.map(index => {
+        const ukeires = [...setUkeires];
+        ukeires[index] = partialSetUkeire(sets[index], true);
+        //console.log.log(ukeires);
+        return ukeires;
+    });
+    const potentialCompletions = pairConfigurations.map(configuration => generatePossibilities(configuration))
+        .reduce((acc, val) => acc.concat(val), []);
+    const allTiles = sets.map(set => set.tiles).reduce((acc, val) => acc.concat(val), []);
+    const possibleCompletions = potentialCompletions.filter(newTiles => pai_1.validate(allTiles.concat(newTiles)));
+    if (possibleCompletions.length === 0) {
+        return undefined;
+    }
+    else {
+        return [...new Set(possibleCompletions.reduce((acc, val) => acc.concat(val), []))];
+    }
+}
+exports.ukeireSingle = ukeireSingle;
+function ukeire(input) {
+    const riipais = typeof (input[0]) === "string" ? riipai(input) : input;
+    const results = riipais.map(riipai => ukeireSingle(riipai.partialSets) || []);
+    return [...new Set(results.reduce((acc, val) => acc.concat(val), []))].sort(parse_1.compare);
+}
+exports.ukeire = ukeire;

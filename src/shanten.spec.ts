@@ -1,5 +1,5 @@
 import { parse } from "./parse";
-import { fitsInSet, PartialSet, shanten, riipai, partialSetUkeire } from "./shanten"
+import { fitsInSet, PartialSet, shanten, riipai, partialSetUkeire, ukeireSingle, ukeire } from "./shanten"
 
 describe("fitsInSet", function() {
   it ("should correctly identify what fits into a singleton tuple", function() {
@@ -139,5 +139,24 @@ describe("partialSetUkeire", function() {
   it ("should error when a pair isn't possible", function() {
     expect(() => partialSetUkeire({ tiles: ["1m"], type: "run"}, true)).toThrowError();
     expect(() => partialSetUkeire({ tiles: ["1z", "1z", "1z"], type: "tuple"}, true)).toThrowError();
+  });
+});
+
+describe("ukeireSingle", function() {
+  it ("should correctly fill out a single pair", function() {
+    expect(ukeireSingle([{tiles: ["1m"], type: "tuple"}])).toEqual(["1m"]);
+  });
+
+  it ("should correctly fill out a run", function() {
+    expect(ukeireSingle([{tiles: ["2m"], type: "run"}, {tiles: ["3p", "3p"], type: "tuple"}])).toEqual(["1m", "3m", "4m"]);
+  });
+});
+
+describe("ukeire", function() {
+  it ("should correctly determine ukeire", function() {
+    expect(ukeire(parse("123m4r56p789s1134z"))).toEqual(["1z", "3z", "4z"]);
+    expect(ukeire(parse("123m4r56p789s1133z"))).toEqual(["1z", "3z"]);
+    expect(ukeire(parse("7899m111222333z"))).toEqual(["6m", "9m"]);
+    expect(ukeire(parse("1112345678999m"))).toEqual(parse("123456789m"));
   });
 });

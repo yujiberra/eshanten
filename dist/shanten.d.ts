@@ -15,3 +15,6 @@ export declare function fitsInSet(tile: Pai, partialSet: PartialSet): boolean;
 export declare function shanten(tiles: Pai[]): number;
 export declare function riipai(input: RiipaiProgress | Pai[]): Riipai[];
 export declare function partialSetUkeire(partialSet: PartialSet, isPair?: boolean): Pai[][];
+export declare function generatePossibilities(possibilities: Pai[][][], index?: number): Pai[][];
+export declare function ukeireSingle(sets: PartialSet[]): Pai[] | undefined;
+export declare function ukeire(input: Riipai[] | Pai[]): Pai[];

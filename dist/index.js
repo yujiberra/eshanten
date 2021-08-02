@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.stringifyProgress = exports.riipai = exports.shanten = exports.stringify = exports.parse = exports.sameValue = exports.validate = exports.isAkadora = exports.isPinzu = exports.isSozu = exports.isManzu = exports.allTiles = exports.zupais = exports.shupais = exports.sozus = exports.pinzus = exports.manzus = exports.shupaiValue = exports.shupaiType = exports.isShupai = exports.isZupai = void 0;
+exports.ukeire = exports.stringifyProgress = exports.riipai = exports.shanten = exports.stringify = exports.parse = exports.sameValue = exports.validate = exports.isAkadora = exports.isPinzu = exports.isSozu = exports.isManzu = exports.allTiles = exports.zupais = exports.shupais = exports.sozus = exports.pinzus = exports.manzus = exports.shupaiValue = exports.shupaiType = exports.isShupai = exports.isZupai = void 0;
 const pai_1 = require("./pai");
 Object.defineProperty(exports, "isZupai", { enumerable: true, get: function () { return pai_1.isZupai; } });
 Object.defineProperty(exports, "isShupai", { enumerable: true, get: function () { return pai_1.isShupai; } });
@@ -25,3 +25,4 @@ const shanten_1 = require("./shanten");
 Object.defineProperty(exports, "shanten", { enumerable: true, get: function () { return shanten_1.shanten; } });
 Object.defineProperty(exports, "riipai", { enumerable: true, get: function () { return shanten_1.riipai; } });
 Object.defineProperty(exports, "stringifyProgress", { enumerable: true, get: function () { return shanten_1.stringifyProgress; } });
+Object.defineProperty(exports, "ukeire", { enumerable: true, get: function () { return shanten_1.ukeire; } });

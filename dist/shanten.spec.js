@@ -124,3 +124,19 @@ describe("partialSetUkeire", function () {
         expect(() => shanten_1.partialSetUkeire({ tiles: ["1z", "1z", "1z"], type: "tuple" }, true)).toThrowError();
     });
 });
+describe("ukeireSingle", function () {
+    it("should correctly fill out a single pair", function () {
+        expect(shanten_1.ukeireSingle([{ tiles: ["1m"], type: "tuple" }])).toEqual(["1m"]);
+    });
+    it("should correctly fill out a run", function () {
+        expect(shanten_1.ukeireSingle([{ tiles: ["2m"], type: "run" }, { tiles: ["3p", "3p"], type: "tuple" }])).toEqual(["1m", "3m", "4m"]);
+    });
+});
+describe("ukeire", function () {
+    it("should correctly determine ukeire", function () {
+        expect(shanten_1.ukeire(parse_1.parse("123m4r56p789s1134z"))).toEqual(["1z", "3z", "4z"]);
+        expect(shanten_1.ukeire(parse_1.parse("123m4r56p789s1133z"))).toEqual(["1z", "3z"]);
+        expect(shanten_1.ukeire(parse_1.parse("7899m111222333z"))).toEqual(["6m", "9m"]);
+        expect(shanten_1.ukeire(parse_1.parse("1112345678999m"))).toEqual(parse_1.parse("123456789m"));
+    });
+});
