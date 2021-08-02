@@ -86,23 +86,36 @@ export function riipai(input: RiipaiProgress | Pai[]): Riipai[] {
   let tileHasAFriend = false;
   const candidates: RiipaiProgress[] = [];
   partialSets.forEach((partialSet, index) => {
-    // The complex check below is to disallow e.g. adding 2m to 13m,
-    // to prevent double-counting (since 12m + 3m happens earlier)
-    if (fitsInSet(tile, partialSet) &&
-        ((partialSet.type == 'tuple' && ((partialSet.tiles.length == 1)  || roomForMoreRunsAndTriples)) ||
-          (isShupai(partialSet.tiles[0]) && Math.max(...partialSet.tiles.map(t => shupaiValue(t))) < shupaiValue(tile)
-           && partialSets.filter(p => p.type == "tuple").map(p => p.tiles).reduce((a, b) => a.concat(b), []).filter(x => sameValue(x, tile)).length == 0))) {
-      tileHasAFriend = true;
-      const newPartialSet = {
-        tiles: partialSet.tiles.concat([tile]),
-        type: partialSet.type
+    if (fitsInSet(tile, partialSet)) {
+
+      let shouldPutInSet = false;
+      if (partialSet.type == 'tuple') {
+        // Don't turn a pair into a triple if there aren't any (potential) doubles left
+        shouldPutInSet = ((partialSet.tiles.length == 1)  || roomForMoreRunsAndTriples)
+      } else if (Math.max(...partialSet.tiles.map(t => shupaiValue(t))) < shupaiValue(tile)) {
+        // We only add a tile to a run if it's bigger than the other tiles in
+        // it, to prevent double counting
+
+        // We also only put a tile into a run if no other copies of it have been
+        // put into tuples, to prevent double counting (again)
+        const tilesInExistingTuples = partialSets.filter(p => p.type == "tuple")
+          .map(p => p.tiles).reduce((a, b) => a.concat(b), []);
+        shouldPutInSet = (!tilesInExistingTuples.find(x => sameValue(x, tile)));
       }
-      const newPartialSets = [...partialSets];
-      newPartialSets[index] = newPartialSet;
-      candidates.push([{
-        partialSets: newPartialSets,
-        useless: [...useless],
-      }, removeAndCopy(remaining, tile)]);
+
+      if (shouldPutInSet) {
+        tileHasAFriend = true;
+        const newPartialSet = {
+          tiles: partialSet.tiles.concat([tile]),
+          type: partialSet.type
+        }
+        const newPartialSets = [...partialSets];
+        newPartialSets[index] = newPartialSet;
+        candidates.push([{
+          partialSets: newPartialSets,
+          useless: [...useless],
+        }, removeAndCopy(remaining, tile)]);
+      }
     }
   })
 
