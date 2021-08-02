@@ -64,7 +64,7 @@ function removeAndCopy<T>(array: T[], ...elements: T[]): T[] {
   return copiedArray;
 }
 
-export function riipai(input: RiipaiProgress | Pai[]): Riipai[] {
+export function riipai(input: RiipaiProgress | Pai[], currentTile: Pai = "invalid", skippedSets: Set<PartialSet> = new Set()): Riipai[] {
   const progress = (typeof(input[0]) == 'string' ?
     [{
       partialSets: [],
@@ -84,10 +84,14 @@ export function riipai(input: RiipaiProgress | Pai[]): Riipai[] {
 
   // try adding first tile to existing sets
   const tile = remaining[0];
+  if (!sameValue(tile, currentTile)) {
+    currentTile = tile;
+    skippedSets = new Set();
+  }
   let tileHasAFriend = false;
-  const candidates: RiipaiProgress[] = [];
+  let results: Riipai[] = [];
   partialSets.forEach((partialSet, index) => {
-    if (fitsInSet(tile, partialSet)) {
+    if (!skippedSets.has(partialSet) && fitsInSet(tile, partialSet)) {
 
       let shouldPutInSet = false;
       if (partialSet.type == 'tuple') {
@@ -101,7 +105,7 @@ export function riipai(input: RiipaiProgress | Pai[]): Riipai[] {
         // put into tuples, to prevent double counting (again)
         const tilesInExistingTuples = partialSets.filter(p => p.type == "tuple")
           .map(p => p.tiles).reduce((a, b) => a.concat(b), []);
-        shouldPutInSet = (!tilesInExistingTuples.find(x => sameValue(x, tile)));
+        shouldPutInSet = !tilesInExistingTuples.find(x => sameValue(x, tile)); // !usedRuns.has(setIdentifier) &&
       }
 
       if (shouldPutInSet) {
@@ -112,10 +116,11 @@ export function riipai(input: RiipaiProgress | Pai[]): Riipai[] {
         }
         const newPartialSets = [...partialSets];
         newPartialSets[index] = newPartialSet;
-        candidates.push([{
+        results = results.concat(riipai([{
           partialSets: newPartialSets,
           useless: [...useless],
-        }, removeAndCopy(remaining, tile)]);
+        }, removeAndCopy(remaining, tile)] as RiipaiProgress, currentTile, skippedSets));
+        skippedSets.add(partialSet);
       }
     }
   })
@@ -127,16 +132,16 @@ export function riipai(input: RiipaiProgress | Pai[]): Riipai[] {
         set.type == "tuple" && sameValue(tile, set.tiles[0])).length == 0)) {
     if (isShupai(tile)) {
       if (roomForMoreRunsAndTriples) {
-        candidates.push([{
+        results = results.concat(riipai([{
           partialSets: partialSets.concat([{tiles:[tile], type:"run"}]),
           useless: [...useless],
-        }, removeAndCopy(remaining, tile)]);
+        }, removeAndCopy(remaining, tile)] as RiipaiProgress, currentTile, skippedSets));
       }
     }
-    candidates.push([{
+    results = results.concat(riipai([{
       partialSets: partialSets.concat([{tiles:[tile], type:"tuple"}]),
       useless: [...useless],
-    }, removeAndCopy(remaining, tile)]);
+    }, removeAndCopy(remaining, tile)] as RiipaiProgress, currentTile, skippedSets));
   }
 
   // if tile can't combine with anything, give up on using it
@@ -145,16 +150,14 @@ export function riipai(input: RiipaiProgress | Pai[]): Riipai[] {
     const matches = remaining.filter(t => sameValue(t, tile));
     const newRemaining = [...remaining];
     newRemaining.splice(index, matches.length);
-    candidates.push([{
+    results = results.concat(riipai([{
       partialSets: [...partialSets],
       useless: useless.concat(matches),
-    }, newRemaining])
+    }, newRemaining] as RiipaiProgress, currentTile, skippedSets));
   }
 
-  const results = candidates.map(progress => riipai(progress));
-  const flattened = results[0].concat(...results.slice(1));
-  const minimum = Math.min(...flattened.map(progress => progress.useless.length));
-  return flattened.filter(prog => prog.useless.length === minimum);
+  const minimum = Math.min(...results.map(progress => progress.useless.length));
+  return results.filter(prog => prog.useless.length === minimum);
 }
 
 export function partialSetUkeire(partialSet: PartialSet, isPair = false): Pai[][] {

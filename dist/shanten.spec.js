@@ -64,6 +64,9 @@ describe("riipai", function () {
     it("should correctly identify two interpretations of 7899m", function () {
         expect(shanten_1.riipai(parse_1.parse("7899m111222333z")).length).toBe(2);
     });
+    it("should correctly identify three interpretations of 7778899m", function () {
+        expect(shanten_1.riipai(parse_1.parse("1112227778989m")).length).toBe(3);
+    });
 });
 describe("shanten", function () {
     it("should correctly compute shanten in simple cases", function () {

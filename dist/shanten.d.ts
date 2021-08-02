@@ -13,7 +13,7 @@ export declare function stringifyRiipai({ partialSets, useless }: Riipai): strin
 export declare function formSet(tile1: Pai, tile2: Pai): PartialSet | null;
 export declare function fitsInSet(tile: Pai, partialSet: PartialSet): boolean;
 export declare function shanten(tiles: Pai[]): number;
-export declare function riipai(input: RiipaiProgress | Pai[]): Riipai[];
+export declare function riipai(input: RiipaiProgress | Pai[], currentTile?: Pai, skippedSets?: Set<PartialSet>): Riipai[];
 export declare function partialSetUkeire(partialSet: PartialSet, isPair?: boolean): Pai[][];
 export declare function generatePossibilities(possibilities: Pai[][][], index?: number): Pai[][];
 export declare function ukeireSingle(sets: PartialSet[]): Pai[] | undefined;
