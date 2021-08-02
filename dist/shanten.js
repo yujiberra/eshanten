@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.riipai = exports.shanten = exports.fitsInSet = exports.formSet = exports.stringifyProgress = void 0;
+exports.partialSetUkeire = exports.riipai = exports.shanten = exports.fitsInSet = exports.formSet = exports.stringifyProgress = void 0;
 const pai_1 = require("./pai");
 const parse_1 = require("./parse");
 function stringifyProgress([{ partialSets, useless }, remaining]) {
@@ -135,3 +135,52 @@ function riipai(input) {
     return flattened.filter(prog => prog.useless.length === minimum);
 }
 exports.riipai = riipai;
+function partialSetUkeire(partialSet, isPair = false) {
+    if (partialSet.type === 'tuple') {
+        const additionalNeeded = (isPair ? 2 : 3) - partialSet.tiles.length;
+        return [Array(additionalNeeded).fill(pai_1.nonAkadoraCopy(partialSet.tiles[0]))];
+    }
+    else {
+        if (isPair)
+            throw new Error("A run can't be a pair");
+        if (partialSet.tiles.length === 3) {
+            return [[]];
+        }
+        else {
+            const type = pai_1.shupaiType(partialSet.tiles[0]);
+            if (partialSet.tiles.length === 1) {
+                const value = pai_1.shupaiValue(partialSet.tiles[0]);
+                const possibilities = [];
+                if (value >= 3) {
+                    possibilities.push([pai_1.shupai(type, value - 2), pai_1.shupai(type, value - 1)]);
+                }
+                if (value >= 2 && value <= 8) {
+                    possibilities.push([pai_1.shupai(type, value - 1), pai_1.shupai(type, value + 1)]);
+                }
+                if (value <= 7) {
+                    possibilities.push([pai_1.shupai(type, value + 1), pai_1.shupai(type, value + 2)]);
+                }
+                return possibilities;
+            }
+            else if (partialSet.tiles.length === 2) {
+                const [min, max] = partialSet.tiles.map(pai_1.shupaiValue).sort();
+                if (max - min == 2) {
+                    const neededValue = min + 1;
+                    return [[pai_1.shupai(type, neededValue)]];
+                }
+                else {
+                    const possibilities = [];
+                    if (min >= 2) {
+                        possibilities.push([pai_1.shupai(type, min - 1)]);
+                    }
+                    if (max <= 8) {
+                        possibilities.push([pai_1.shupai(type, max + 1)]);
+                    }
+                    return possibilities;
+                }
+            }
+        }
+    }
+    return [[]]; // shouldn't ever get here
+}
+exports.partialSetUkeire = partialSetUkeire;

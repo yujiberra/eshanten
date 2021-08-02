@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.validate = exports.sameValue = exports.zupaisAndKanjis = exports.kanjiForZupai = exports.digitForZupai = exports.numberToZupai = exports.allTiles = exports.zupais = exports.isShupai = exports.isZupai = exports.isAkadora = exports.isPinzu = exports.isSozu = exports.isManzu = exports.shupaiValue = exports.shupaiType = exports.shupais = exports.sozus = exports.pinzus = exports.manzus = void 0;
+exports.validate = exports.sameValue = exports.zupaisAndKanjis = exports.kanjiForZupai = exports.digitForZupai = exports.numberToZupai = exports.allTiles = exports.zupais = exports.isShupai = exports.isZupai = exports.nonAkadoraCopy = exports.isAkadora = exports.isPinzu = exports.isSozu = exports.isManzu = exports.shupai = exports.shupaiValue = exports.shupaiType = exports.shupais = exports.sozus = exports.pinzus = exports.manzus = void 0;
 const parse_1 = require("./parse");
 const manzuSet = new Set();
 const pinzuSet = new Set();
@@ -49,6 +49,10 @@ function shupaiValue(pai) {
         throw new Error(`Tried to get value of invalid shupai ${pai}`);
 }
 exports.shupaiValue = shupaiValue;
+function shupai(type, value, aka = false) {
+    return `${aka ? 0 : value}${type}`;
+}
+exports.shupai = shupai;
 const isManzu = (pai) => manzuSet.has(pai);
 exports.isManzu = isManzu;
 const isSozu = (pai) => sozuSet.has(pai);
@@ -59,6 +63,22 @@ function isAkadora(pai) {
     return akaDoraSet.has(pai);
 }
 exports.isAkadora = isAkadora;
+function nonAkadoraCopy(pai) {
+    if (!isAkadora(pai)) {
+        return pai;
+    }
+    else {
+        switch (shupaiType(pai)) {
+            case "m":
+                return "5m";
+            case "p":
+                return "5p";
+            case "s":
+                return "5s";
+        }
+    }
+}
+exports.nonAkadoraCopy = nonAkadoraCopy;
 function isZupai(pai) {
     return zupaiSet.has(pai);
 }

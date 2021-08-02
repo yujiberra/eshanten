@@ -90,3 +90,37 @@ describe("shanten", function () {
         expect(shanten_1.shanten(parse_1.parse("1111m3333p5555s1z"))).toBe(2);
     });
 });
+describe("partialSetUkeire", function () {
+    it("should correctly generate ukeire for tuples", function () {
+        expect(shanten_1.partialSetUkeire({ tiles: ["1z"], type: "tuple" })).toEqual([["1z", "1z"]]);
+        expect(shanten_1.partialSetUkeire({ tiles: ["1z", "1z"], type: "tuple" })).toEqual([["1z"]]);
+        expect(shanten_1.partialSetUkeire({ tiles: ["1z", "1z", "1z"], type: "tuple" })).toEqual([[]]);
+        expect(shanten_1.partialSetUkeire({ tiles: ["1m"], type: "tuple" })).toEqual([["1m", "1m"]]);
+        expect(shanten_1.partialSetUkeire({ tiles: ["1m", "1m"], type: "tuple" })).toEqual([["1m"]]);
+        expect(shanten_1.partialSetUkeire({ tiles: ["1m", "1m", "1m"], type: "tuple" })).toEqual([[]]);
+    });
+    it("should correctly generate ukeire for pairs", function () {
+        expect(shanten_1.partialSetUkeire({ tiles: ["1z"], type: "tuple" }, true)).toEqual([["1z"]]);
+        expect(shanten_1.partialSetUkeire({ tiles: ["1z", "1z"], type: "tuple" }, true)).toEqual([[]]);
+        expect(shanten_1.partialSetUkeire({ tiles: ["1m"], type: "tuple" }, true)).toEqual([["1m"]]);
+        expect(shanten_1.partialSetUkeire({ tiles: ["1m", "1m"], type: "tuple" }, true)).toEqual([[]]);
+    });
+    it("should correctly generate ukeire for two-tile runs", function () {
+        expect(shanten_1.partialSetUkeire({ tiles: ["1m", "2m"], type: "run" })).toEqual([["3m"]]);
+        expect(shanten_1.partialSetUkeire({ tiles: ["1m", "3m"], type: "run" })).toEqual([["2m"]]);
+        expect(shanten_1.partialSetUkeire({ tiles: ["8m", "9m"], type: "run" })).toEqual([["7m"]]);
+        expect(shanten_1.partialSetUkeire({ tiles: ["4m", "5m"], type: "run" })).toEqual([["3m"], ["6m"]]);
+    });
+    it("should correctly generate ukeire for one-tile runs", function () {
+        expect(shanten_1.partialSetUkeire({ tiles: ["1m"], type: "run" })).toEqual([["2m", "3m"]]);
+        expect(shanten_1.partialSetUkeire({ tiles: ["2m"], type: "run" })).toEqual([["1m", "3m"], ["3m", "4m"]]);
+        expect(shanten_1.partialSetUkeire({ tiles: ["3m"], type: "run" })).toEqual([["1m", "2m"], ["2m", "4m"], ["4m", "5m"]]);
+        expect(shanten_1.partialSetUkeire({ tiles: ["7m"], type: "run" })).toEqual([["5m", "6m"], ["6m", "8m"], ["8m", "9m"]]);
+        expect(shanten_1.partialSetUkeire({ tiles: ["8m"], type: "run" })).toEqual([["6m", "7m"], ["7m", "9m"]]);
+        expect(shanten_1.partialSetUkeire({ tiles: ["9m"], type: "run" })).toEqual([["7m", "8m"]]);
+    });
+    it("should error when a pair isn't possible", function () {
+        expect(() => shanten_1.partialSetUkeire({ tiles: ["1m"], type: "run" }, true)).toThrowError();
+        expect(() => shanten_1.partialSetUkeire({ tiles: ["1z", "1z", "1z"], type: "tuple" }, true)).toThrowError();
+    });
+});

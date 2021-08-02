@@ -1,4 +1,5 @@
-import { isShupai, Pai, shupaiType, shupaiValue, sameValue } from "./pai";
+import { isShupai, Pai, shupaiType, shupaiValue, sameValue, nonAkadoraCopy,
+         shupai } from "./pai";
 import { stringify } from "./parse";
 
 export interface PartialSet {
@@ -154,4 +155,48 @@ export function riipai(input: RiipaiProgress | Pai[]): Riipai[] {
   const flattened = results[0].concat(...results.slice(1));
   const minimum = Math.min(...flattened.map(progress => progress.useless.length));
   return flattened.filter(prog => prog.useless.length === minimum);
+}
+
+export function partialSetUkeire(partialSet: PartialSet, isPair = false): Pai[][] {
+  if (partialSet.type === 'tuple') {
+    const additionalNeeded = (isPair? 2 : 3) - partialSet.tiles.length;
+    return [Array(additionalNeeded).fill(nonAkadoraCopy(partialSet.tiles[0]))];
+  } else {
+    if (isPair) throw new Error("A run can't be a pair");
+    if (partialSet.tiles.length === 3) {
+      return [[]]
+    } else {
+      const type = shupaiType(partialSet.tiles[0]);
+      if (partialSet.tiles.length === 1) {
+        const value = shupaiValue(partialSet.tiles[0]);
+        const possibilities = [];
+        if (value >= 3) {
+          possibilities.push([shupai(type, value - 2), shupai(type, value - 1)]);
+        }
+        if (value >= 2 && value <= 8) {
+          possibilities.push([shupai(type, value - 1), shupai(type, value + 1)]);
+        }
+        if (value <= 7) {
+          possibilities.push([shupai(type, value + 1), shupai(type, value + 2)]);
+        }
+        return possibilities;
+      } else if (partialSet.tiles.length === 2) {
+          const [min, max] = partialSet.tiles.map(shupaiValue).sort();
+          if (max - min == 2) {
+            const neededValue = min + 1;
+            return [[shupai(type, neededValue)]];
+          } else {
+            const possibilities = [];
+            if (min >= 2) {
+              possibilities.push([shupai(type, min - 1)]);
+            }
+            if (max <= 8) {
+              possibilities.push([shupai(type, max + 1)]);
+            }
+            return possibilities;
+          }
+      }
+    }
+  }
+  return [[]]; // shouldn't ever get here
 }

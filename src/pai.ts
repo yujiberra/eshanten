@@ -44,12 +44,31 @@ export function shupaiValue(pai: Pai): number {
   else throw new Error(`Tried to get value of invalid shupai ${pai}`);
 }
 
+export function shupai(type: ShupaiType, value: number, aka = false): Pai {
+  return `${aka ? 0 : value}${type}`;
+}
+
 export const isManzu = (pai: Pai): boolean => manzuSet.has(pai);
 export const isSozu = (pai: Pai): boolean => sozuSet.has(pai);
 export const isPinzu = (pai: Pai): boolean => pinzuSet.has(pai);
 
 export function isAkadora(pai: Pai): boolean {
   return akaDoraSet.has(pai);
+}
+
+export function nonAkadoraCopy(pai: Pai): Pai {
+  if (!isAkadora(pai)) {
+    return pai;
+  } else {
+    switch(shupaiType(pai)) {
+      case "m":
+        return "5m";
+      case "p":
+        return "5p";
+      case "s":
+        return "5s";
+    }
+  }
 }
 
 export function isZupai(pai: string): boolean {
