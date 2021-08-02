@@ -1,15 +1,14 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ukeire = exports.ukeireSingle = exports.generatePossibilities = exports.partialSetUkeire = exports.riipai = exports.shanten = exports.fitsInSet = exports.formSet = exports.stringifyProgress = void 0;
+exports.ukeire = exports.ukeireSingle = exports.generatePossibilities = exports.partialSetUkeire = exports.riipai = exports.shanten = exports.fitsInSet = exports.formSet = exports.stringifyRiipai = void 0;
 const pai_1 = require("./pai");
 const parse_1 = require("./parse");
-function stringifyProgress([{ partialSets, useless }, remaining]) {
+function stringifyRiipai({ partialSets, useless }) {
     const sets = partialSets.map(s => parse_1.stringify(s.tiles));
-    const remainingStr = remaining.length > 0 ? `/ Remaining: ${parse_1.stringify(remaining)} ` : '';
     const uselessStr = parse_1.stringify(useless);
-    return `Sets: ${sets.toString()} / Useless: ${uselessStr} ${remainingStr}/ Shanten = ${useless.length}`;
+    return `Sets: ${sets.toString()} / Useless: ${uselessStr} / Shanten = ${useless.length}`;
 }
-exports.stringifyProgress = stringifyProgress;
+exports.stringifyRiipai = stringifyRiipai;
 function formSet(tile1, tile2) {
     if (pai_1.sameValue(tile1, tile2)) {
         return { tiles: [tile1, tile2], type: "tuple" };

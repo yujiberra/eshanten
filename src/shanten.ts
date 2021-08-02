@@ -17,11 +17,10 @@ export type Riipai = {
 
 export type RiipaiProgress = [Riipai, Pai[]]
 
-export function stringifyProgress([{ partialSets, useless }, remaining]: [Riipai, Pai[]]): string {
+export function stringifyRiipai({ partialSets, useless }: Riipai): string {
   const sets = partialSets.map(s => stringify(s.tiles));
-  const remainingStr = remaining.length > 0 ? `/ Remaining: ${stringify(remaining)} ` : '';
   const uselessStr = stringify(useless);
-  return `Sets: ${sets.toString()} / Useless: ${uselessStr} ${remainingStr}/ Shanten = ${useless.length}`
+  return `Sets: ${sets.toString()} / Useless: ${uselessStr} / Shanten = ${useless.length}`
 }
 
 export function formSet(tile1: Pai, tile2: Pai): PartialSet | null {

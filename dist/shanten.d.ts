@@ -9,7 +9,7 @@ export declare type Riipai = {
     useless: Pai[];
 };
 export declare type RiipaiProgress = [Riipai, Pai[]];
-export declare function stringifyProgress([{ partialSets, useless }, remaining]: [Riipai, Pai[]]): string;
+export declare function stringifyRiipai({ partialSets, useless }: Riipai): string;
 export declare function formSet(tile1: Pai, tile2: Pai): PartialSet | null;
 export declare function fitsInSet(tile: Pai, partialSet: PartialSet): boolean;
 export declare function shanten(tiles: Pai[]): number;
