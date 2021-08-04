@@ -64,7 +64,8 @@ function removeAndCopy<T>(array: T[], ...elements: T[]): T[] {
   return copiedArray;
 }
 
-export function riipai(input: RiipaiProgress | Pai[], currentTile: Pai = "invalid", skippedSets: Set<PartialSet> = new Set()): Riipai[] {
+export function riipai(input: RiipaiProgress | Pai[], currentTile: Pai = "invalid",
+    skippedSets: Set<PartialSet> = new Set(), bestSoFar = { shanten: Number.POSITIVE_INFINITY }): Riipai[] {
   const progress = (typeof(input[0]) == 'string' ?
     [{
       partialSets: [],
@@ -74,8 +75,15 @@ export function riipai(input: RiipaiProgress | Pai[], currentTile: Pai = "invali
 
   const [{ partialSets, useless }, remaining] = progress;
 
+  if (useless.length > bestSoFar.shanten) {
+    return [];
+  }
+
   // base case
   if (remaining.length === 0) {
+    if (useless.length < bestSoFar.shanten) {
+      bestSoFar.shanten = useless.length;
+    }
     return [{ partialSets, useless }];
   }
 
@@ -119,7 +127,7 @@ export function riipai(input: RiipaiProgress | Pai[], currentTile: Pai = "invali
         results = results.concat(riipai([{
           partialSets: newPartialSets,
           useless: [...useless],
-        }, removeAndCopy(remaining, tile)] as RiipaiProgress, currentTile, skippedSets));
+        }, removeAndCopy(remaining, tile)] as RiipaiProgress, currentTile, skippedSets, bestSoFar));
         skippedSets.add(partialSet);
       }
     }
@@ -135,13 +143,13 @@ export function riipai(input: RiipaiProgress | Pai[], currentTile: Pai = "invali
         results = results.concat(riipai([{
           partialSets: partialSets.concat([{tiles:[tile], type:"run"}]),
           useless: [...useless],
-        }, removeAndCopy(remaining, tile)] as RiipaiProgress, currentTile, skippedSets));
+        }, removeAndCopy(remaining, tile)] as RiipaiProgress, currentTile, skippedSets, bestSoFar));
       }
     }
     results = results.concat(riipai([{
       partialSets: partialSets.concat([{tiles:[tile], type:"tuple"}]),
       useless: [...useless],
-    }, removeAndCopy(remaining, tile)] as RiipaiProgress, currentTile, skippedSets));
+    }, removeAndCopy(remaining, tile)] as RiipaiProgress, currentTile, skippedSets, bestSoFar));
   }
 
   // if tile can't combine with anything, give up on using it
@@ -153,7 +161,7 @@ export function riipai(input: RiipaiProgress | Pai[], currentTile: Pai = "invali
     results = results.concat(riipai([{
       partialSets: [...partialSets],
       useless: useless.concat(matches),
-    }, newRemaining] as RiipaiProgress, currentTile, skippedSets));
+    }, newRemaining] as RiipaiProgress, currentTile, skippedSets, bestSoFar));
   }
 
   const minimum = Math.min(...results.map(progress => progress.useless.length));

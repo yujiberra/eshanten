@@ -52,7 +52,7 @@ function removeAndCopy(array, ...elements) {
     elements.forEach(element => copiedArray.splice(copiedArray.indexOf(element), 1));
     return copiedArray;
 }
-function riipai(input, currentTile = "invalid", skippedSets = new Set()) {
+function riipai(input, currentTile = "invalid", skippedSets = new Set(), bestSoFar = { shanten: Number.POSITIVE_INFINITY }) {
     const progress = (typeof (input[0]) == 'string' ?
         [{
                 partialSets: [],
@@ -60,8 +60,14 @@ function riipai(input, currentTile = "invalid", skippedSets = new Set()) {
             }, input] :
         input);
     const [{ partialSets, useless }, remaining] = progress;
+    if (useless.length > bestSoFar.shanten) {
+        return [];
+    }
     // base case
     if (remaining.length === 0) {
+        if (useless.length < bestSoFar.shanten) {
+            bestSoFar.shanten = useless.length;
+        }
         return [{ partialSets, useless }];
     }
     const roomForMoreRunsAndTriples = partialSets.filter(set => (set.type == "run" || set.tiles.length == 3)).length < 4;
@@ -100,7 +106,7 @@ function riipai(input, currentTile = "invalid", skippedSets = new Set()) {
                 results = results.concat(riipai([{
                         partialSets: newPartialSets,
                         useless: [...useless],
-                    }, removeAndCopy(remaining, tile)], currentTile, skippedSets));
+                    }, removeAndCopy(remaining, tile)], currentTile, skippedSets, bestSoFar));
                 skippedSets.add(partialSet);
             }
         }
@@ -114,13 +120,13 @@ function riipai(input, currentTile = "invalid", skippedSets = new Set()) {
                 results = results.concat(riipai([{
                         partialSets: partialSets.concat([{ tiles: [tile], type: "run" }]),
                         useless: [...useless],
-                    }, removeAndCopy(remaining, tile)], currentTile, skippedSets));
+                    }, removeAndCopy(remaining, tile)], currentTile, skippedSets, bestSoFar));
             }
         }
         results = results.concat(riipai([{
                 partialSets: partialSets.concat([{ tiles: [tile], type: "tuple" }]),
                 useless: [...useless],
-            }, removeAndCopy(remaining, tile)], currentTile, skippedSets));
+            }, removeAndCopy(remaining, tile)], currentTile, skippedSets, bestSoFar));
     }
     // if tile can't combine with anything, give up on using it
     if (!tileHasAFriend) {
@@ -131,7 +137,7 @@ function riipai(input, currentTile = "invalid", skippedSets = new Set()) {
         results = results.concat(riipai([{
                 partialSets: [...partialSets],
                 useless: useless.concat(matches),
-            }, newRemaining], currentTile, skippedSets));
+            }, newRemaining], currentTile, skippedSets, bestSoFar));
     }
     const minimum = Math.min(...results.map(progress => progress.useless.length));
     return results.filter(prog => prog.useless.length === minimum);
