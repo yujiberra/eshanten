@@ -66,7 +66,7 @@ function removeAndCopy<T>(array: T[], ...elements: T[]): T[] {
 
 export function riipai(input: RiipaiProgress | Pai[], currentTile: Pai = "invalid",
     skippedSets: Set<PartialSet> = new Set(), bestSoFar = { shanten: Number.POSITIVE_INFINITY }): Riipai[] {
-  const progress = (typeof(input[0]) == 'string' ?
+  const progress = (typeof(input[0]) == 'string' || input.length == 0 ?
     [{
       partialSets: [],
       useless: []

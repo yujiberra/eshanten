@@ -53,7 +53,7 @@ function removeAndCopy(array, ...elements) {
     return copiedArray;
 }
 function riipai(input, currentTile = "invalid", skippedSets = new Set(), bestSoFar = { shanten: Number.POSITIVE_INFINITY }) {
-    const progress = (typeof (input[0]) == 'string' ?
+    const progress = (typeof (input[0]) == 'string' || input.length == 0 ?
         [{
                 partialSets: [],
                 useless: []
